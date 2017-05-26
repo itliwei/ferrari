@@ -1,0 +1,9 @@
+
+## 测试环境
+jdbc:
+  driverClassName: com.mysql.jdbc.Driver
+  url: jdbc:mysql://10.16.16.31:3306/t_toread?useUnicode=true&amp;characterEncoding=UTF-8
+  username: dev_sms
+  password: ziroomdb
+
+

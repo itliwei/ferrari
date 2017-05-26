@@ -1,0 +1,11 @@
+
+
+
+## 准生产环境
+jdbc:
+  driverClassName: com.mysql.jdbc.Driver
+  url: jdbc:mysql://10.16.16.31/q_toread?useUnicode=true&amp;characterEncoding=UTF-8
+  username: dev_sms
+  password: ziroomdb
+
+

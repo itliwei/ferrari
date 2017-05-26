@@ -1,0 +1,17 @@
+logging:
+  level:
+    ROOT: INFO
+    org.springframework.web: INFO
+
+spring:
+  profiles:
+    active: dev
+  application:
+    name: ferrari
+
+
+
+server:
+  port: 8081
+
+

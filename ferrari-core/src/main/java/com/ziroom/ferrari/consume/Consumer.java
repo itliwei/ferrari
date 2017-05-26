@@ -1,4 +1,4 @@
-package controller;
+package com.ziroom.ferrari.consume;
 
 import com.alibaba.rocketmq.client.consumer.DefaultMQPushConsumer;
 import com.alibaba.rocketmq.client.consumer.listener.ConsumeConcurrentlyContext;
@@ -16,7 +16,7 @@ import java.util.List;
  * @desc
  * @since 1.0
  */
-public class consumer {
+public class Consumer {
     public static void main(String[] args) throws InterruptedException, MQClientException {
         DefaultMQPushConsumer consumer = new DefaultMQPushConsumer("consumer");
         /**

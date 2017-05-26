@@ -1,0 +1,16 @@
+
+
+
+jdbc:
+  driverClassName: com.mysql.jdbc.Driver
+  url: jdbc:mysql://10.16.9.34:3306/wirelessgateway?useUnicode=true&amp;characterEncoding=UTF-8
+  username: dev_sms
+  password: ziroomdb
+
+
+### 本地环境
+#jdbc:
+#  driverClassName: com.mysql.jdbc.Driver
+#  url: jdbc:mysql://127.0.0.1:3306/wirelessgateway?useUnicode=true&amp;characterEncoding=UTF-8
+#  username: root
+#  password: 123456
