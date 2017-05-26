@@ -5,3 +5,10 @@ jdbc:
   url: jdbc:mysql://10.16.16.13:3306:3306/ferrari?useUnicode=true&amp;characterEncoding=UTF-8
   username: dev_bsrd
   password: ziroomdb
+
+
+
+
+management:
+  security:
+    enabled: true
