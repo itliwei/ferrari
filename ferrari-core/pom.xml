@@ -26,6 +26,7 @@
         <retrofit.version>2.1.0</retrofit.version>
         <rocketmq.version>3.4.6</rocketmq.version>
         <lombok.version>1.16.4</lombok.version>
+        <sharding-jdbc.version>1.4.2</sharding-jdbc.version>
         <!--rent util -->
         <rent-common.version>5.4.0-SNAPSHOT</rent-common.version>
     </properties>
@@ -165,6 +166,13 @@
         <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
             <artifactId>jackson-datatype-jsr310</artifactId>
+        </dependency>
+
+        <!-- sharding-->
+        <dependency>
+            <groupId>com.dangdang</groupId>
+            <artifactId>sharding-jdbc-core</artifactId>
+            <version>${sharding-jdbc.version}</version>
         </dependency>
     </dependencies>
 
