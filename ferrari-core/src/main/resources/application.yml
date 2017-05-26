@@ -5,7 +5,7 @@ logging:
 
 spring:
   profiles:
-    active: prod
+    active: dev
   application:
     name: ferrari
 

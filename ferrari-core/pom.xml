@@ -151,11 +151,11 @@
         </dependency>
 
         <!-- common-utils -->
-        <dependency>
-            <groupId>com.ziroom</groupId>
-            <artifactId>rent-common</artifactId>
-            <version>${rent-common.version}</version>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>com.ziroom</groupId>-->
+            <!--<artifactId>rent-common</artifactId>-->
+            <!--<version>${rent-common.version}</version>-->
+        <!--</dependency>-->
         <dependency>
             <groupId>com.alibaba.rocketmq</groupId>
             <artifactId>rocketmq-client</artifactId>
