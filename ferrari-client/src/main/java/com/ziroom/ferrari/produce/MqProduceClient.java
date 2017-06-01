@@ -25,11 +25,11 @@ import java.util.Date;
 @Slf4j
 @Service
 public class MqProduceClient {
-
+    @Autowired
     private RabbitMqSendClient rabbitMqSendClient;
-
+    @Autowired
     private RabbitConnectionFactory rabbitConnectionFactory;
-
+    //环境变量
     private String currentEnv;
 
 
@@ -49,12 +49,14 @@ public class MqProduceClient {
         }
     }
 
-    public void sendToMq(QueueName queueName ,MessageData messageData) {
+    public void sendToMq(QueueNameEnum queueNameEnum ,MessageData messageData) {
         Transaction t = Cat.newTransaction("Service", "Sending data to mq");
         log.info("Trace data circle life start");
-        log.info("Sending data to RabbitMq to Channel[{}]", queueName.getSystem() + "-"
-                + queueName.getModule() + "-" + queueName.getFunction());
+        log.info("Sending data to RabbitMq to Channel[{}]", queueNameEnum.getSystem() + "-"
+                + queueNameEnum.getModule() + "-" + queueNameEnum.getFunction());
         try {
+            QueueName queueName = new QueueName(queueNameEnum.getSystem(),
+                    queueNameEnum.getModule(),queueNameEnum.getFunction());
             Cat.logEvent("INFO", "Sending data to MQ");
             rabbitMqSendClient.sendQueue(queueName, messageData.toJsonStr());
             Cat.logEvent("INFO", Thread.currentThread().getStackTrace()[1].getMethodName(), Transaction.SUCCESS, messageData.toJsonStr());
@@ -81,6 +83,6 @@ public class MqProduceClient {
         QueueName queueName = new QueueName(QueueNameEnum.AMS.getSystem(),QueueNameEnum.AMS.getModule(),QueueNameEnum.AMS.getFunction());
         MqProduceClient mqProduceClient = new MqProduceClient();
 
-        mqProduceClient.sendToMq(queueName,messageData);
+        mqProduceClient.sendToMq(QueueNameEnum.AMS,messageData);
     }
 }
