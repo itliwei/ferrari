@@ -1,5 +1,6 @@
 package com.ziroom.ferrari.config;
 
+import com.google.common.base.Strings;
 import com.ziroom.ferrari.produce.MqProduceClient;
 import com.ziroom.gaea.mq.rabbitmq.client.RabbitMqSendClient;
 import com.ziroom.gaea.mq.rabbitmq.factory.RabbitConnectionFactory;

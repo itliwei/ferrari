@@ -2,6 +2,7 @@ package com.ziroom.ferrari.produce;
 
 import com.dianping.cat.Cat;
 import com.dianping.cat.message.Transaction;
+import com.google.common.base.Strings;
 import com.ziroom.ferrari.domain.MessageData;
 import com.ziroom.ferrari.enums.ChangeTypeEnum;
 import com.ziroom.ferrari.enums.QueueNameEnum;
@@ -9,6 +10,7 @@ import com.ziroom.gaea.mq.rabbitmq.client.RabbitMqSendClient;
 import com.ziroom.gaea.mq.rabbitmq.entity.QueueName;
 import com.ziroom.gaea.mq.rabbitmq.exception.GaeaRabbitMQException;
 import com.ziroom.gaea.mq.rabbitmq.factory.RabbitConnectionFactory;
+import com.ziroom.rent.common.application.EnvHelper;
 import com.ziroom.rent.common.util.DateUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +30,11 @@ public class MqProduceClient {
 
     private RabbitConnectionFactory rabbitConnectionFactory;
 
+    private String currentEnv;
+
+
     public MqProduceClient() {
+        currentEnv = EnvHelper.getEnv();
         initRabbitConnectionFactory();
     }
 
