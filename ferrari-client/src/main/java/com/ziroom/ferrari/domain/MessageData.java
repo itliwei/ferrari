@@ -13,6 +13,7 @@ import lombok.ToString;
 @Getter
 @ToString
 public class MessageData {
+    //数据库主键ID
     private Long id;
     //消息ID
     private String msgId;
