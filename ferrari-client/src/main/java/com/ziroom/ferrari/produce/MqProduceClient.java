@@ -35,10 +35,11 @@ public class MqProduceClient {
 
     public MqProduceClient() {
         currentEnv = EnvHelper.getEnv();
-        initRabbitConnectionFactory();
+        //初始化MQ连接接
+        initRabbitConnection();
     }
 
-    public void initRabbitConnectionFactory(){
+    public void initRabbitConnection(){
         //如果factory为空，创建factory
          if(rabbitConnectionFactory == null){
              rabbitConnectionFactory = new RabbitConnectionFactory();
