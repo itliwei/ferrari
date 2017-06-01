@@ -1,5 +1,7 @@
 package com.ziroom.ferrari.domain;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -27,5 +29,8 @@ public class MessageData {
     //变更内容
     private String changeData;
 
+    public String toJsonStr() {
+        return JSON.toJSONString(this,new SerializerFeature[0]);
+    }
 
 }

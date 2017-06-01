@@ -20,23 +20,4 @@ public enum ChangeTypeEnum {
         this.desc = desc;
     }
 
-    // getDesc
-    public static String matchDesc(int code) {
-        for (ChangeTypeEnum exType : ChangeTypeEnum.values()) {
-            if (exType.getCode() == code) {
-                return exType.desc;
-            }
-        }
-        return null;
-    }
-    //通过code值获取枚举值
-    public static ChangeTypeEnum getExtTypeByCode(int code) {
-        for (ChangeTypeEnum exType : ChangeTypeEnum.values()) {
-            if (exType.getCode() == code) {
-                return exType;
-            }
-        }
-        return null;
-    }
-
 }

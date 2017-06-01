@@ -56,8 +56,8 @@ public class MqProduceClient {
                 + queueName.getModule() + "-" + queueName.getFunction());
         try {
             Cat.logEvent("INFO", "Sending data to MQ");
-            rabbitMqSendClient.sendQueue(queueName, messageData.toString());
-            Cat.logEvent("INFO", Thread.currentThread().getStackTrace()[1].getMethodName(), Transaction.SUCCESS, messageData.toString());
+            rabbitMqSendClient.sendQueue(queueName, messageData.toJsonStr());
+            Cat.logEvent("INFO", Thread.currentThread().getStackTrace()[1].getMethodName(), Transaction.SUCCESS, messageData.toJsonStr());
             Cat.logMetricForCount("Sending to MQ");
             t.setStatus(Transaction.SUCCESS);
         } catch (Exception ex) {
@@ -72,10 +72,10 @@ public class MqProduceClient {
 
     public static  void main(String[] args){
         MessageData messageData = new MessageData();
-        messageData.setMsgId("aaa");
+//        messageData.setMsgId();
         messageData.setChangeTime(DateUtils.format2Long(new Date()));
         messageData.setProduceTime(DateUtils.format2Long(new Date()));
-        messageData.setChangeKey(ChangeTypeEnum.ADD.getCode());
+        messageData.setChangeKey(ChangeTypeEnum.DELETE.getCode());
         messageData.setChangeData(null);
 
         QueueName queueName = new QueueName(QueueNameEnum.AMS.getSystem(),QueueNameEnum.AMS.getModule(),QueueNameEnum.AMS.getFunction());
