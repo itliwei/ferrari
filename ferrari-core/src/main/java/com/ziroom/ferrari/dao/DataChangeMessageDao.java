@@ -1,7 +1,7 @@
 package com.ziroom.ferrari.dao;
 
 
-import com.ziroom.ferrari.domain.DataChangeMessage;
+import com.ziroom.ferrari.DataChangeMessage;
 import org.springframework.stereotype.Repository;
 
 

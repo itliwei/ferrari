@@ -20,10 +20,28 @@
     <modules>
         <module>assembly</module>
         <module>ferrari-core</module>
+        <module>ferrari-client</module>
     </modules>
-
-
-
+    <properties>
+        <rent-common.version>2.0.0-RELEASE</rent-common.version>
+    </properties>
+    <dependencies>
+        <dependency>
+            <groupId>com.ziroom</groupId>
+            <artifactId>rent-common</artifactId>
+            <version>${rent-common.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.ziroom.platform.tesla</groupId>
+                    <artifactId>tesla-config</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.ziroom.platform.tesla</groupId>
+                    <artifactId>tesla-config-spring</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+    </dependencies>
 
 
 </project>

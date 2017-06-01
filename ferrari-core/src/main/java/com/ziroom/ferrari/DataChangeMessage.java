@@ -1,4 +1,4 @@
-package com.ziroom.ferrari.domain;
+package com.ziroom.ferrari;
 
 import lombok.*;
 
