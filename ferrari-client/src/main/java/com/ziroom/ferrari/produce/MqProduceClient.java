@@ -63,4 +63,18 @@ public class MqProduceClient {
             t.complete();
         }
     }
+
+    public static  void main(String[] args){
+        MessageData messageData = new MessageData();
+        messageData.setMsgId("aaa");
+        messageData.setChangeTime(DateUtils.format2Long(new Date()));
+        messageData.setProduceTime(DateUtils.format2Long(new Date()));
+        messageData.setChangeKey(ChangeTypeEnum.ADD.getCode());
+        messageData.setChangeData(null);
+
+        QueueName queueName = new QueueName(QueueNameEnum.AMS.getSystem(),QueueNameEnum.AMS.getModule(),QueueNameEnum.AMS.getFunction());
+        MqProduceClient mqProduceClient = new MqProduceClient();
+
+        mqProduceClient.sendToMq(queueName,messageData);
+    }
 }

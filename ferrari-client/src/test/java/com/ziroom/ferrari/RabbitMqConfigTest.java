@@ -6,14 +6,9 @@ import com.ziroom.ferrari.enums.QueueNameEnum;
 import com.ziroom.ferrari.produce.MqProduceClient;
 import com.ziroom.gaea.mq.rabbitmq.client.RabbitMqSendClient;
 import com.ziroom.gaea.mq.rabbitmq.entity.QueueName;
-import com.ziroom.gaea.mq.rabbitmq.factory.RabbitConnectionFactory;
-import com.ziroom.gaea.mq.rabbitmq.receive.queue.RabbitMqQueueReceiver;
 import com.ziroom.rent.common.util.DateUtils;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.Date;
@@ -29,27 +24,6 @@ import java.util.Date;
 @RunWith(SpringJUnit4ClassRunner.class)
 public class RabbitMqConfigTest {
 
-    @Autowired
-    private RabbitConnectionFactory rabbitConnectionFactory;
-
-    @Autowired
-    private RabbitMqSendClient rabbitMqSendClient;
-    @Autowired
-    private MqProduceClient mqProduceClient;
-
-    @Autowired
-    private RabbitMqQueueReceiver rabbitMqQueueReceiver;
-
-    private QueueName queueName = new QueueName("lukas", "ams", "index");
-
-
-    @Before
-    public void rabbitConnectionaFactoryTest() throws Exception {
-        rabbitConnectionFactory.init();
-        System.out.println(rabbitConnectionFactory.getEnvironment());
-        System.out.println("Hello lukas");
-    }
-
     @Test
     public void rabbitMqSendClientTest() throws Exception {
         MessageData messageData = new MessageData();
@@ -60,6 +34,8 @@ public class RabbitMqConfigTest {
         messageData.setChangeData(null);
 
         QueueName queueName = new QueueName(QueueNameEnum.AMS.getSystem(),QueueNameEnum.AMS.getModule(),QueueNameEnum.AMS.getFunction());
+        MqProduceClient mqProduceClient = new MqProduceClient();
+
         mqProduceClient.sendToMq(queueName,messageData);
 
     }
