@@ -2,24 +2,21 @@ package com.ziroom.ferrari;
 
 import com.ziroom.ferrari.domain.MessageData;
 import com.ziroom.ferrari.enums.ChangeTypeEnum;
-import com.ziroom.ferrari.produce.MqProduce;
+import com.ziroom.ferrari.enums.QueueNameEnum;
+import com.ziroom.ferrari.produce.MqProduceClient;
 import com.ziroom.gaea.mq.rabbitmq.client.RabbitMqSendClient;
 import com.ziroom.gaea.mq.rabbitmq.entity.QueueName;
 import com.ziroom.gaea.mq.rabbitmq.factory.RabbitConnectionFactory;
-import com.ziroom.gaea.mq.rabbitmq.receive.RabbitMqMessageListener;
 import com.ziroom.gaea.mq.rabbitmq.receive.queue.RabbitMqQueueReceiver;
 import com.ziroom.rent.common.util.DateUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 /**
  * RabbitMq注入测试类
@@ -30,7 +27,6 @@ import java.util.List;
  * @since 1.0
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ActiveProfiles("dev")
 public class RabbitMqConfigTest {
 
     @Autowired
@@ -39,7 +35,7 @@ public class RabbitMqConfigTest {
     @Autowired
     private RabbitMqSendClient rabbitMqSendClient;
     @Autowired
-    private MqProduce mqProduce;
+    private MqProduceClient mqProduceClient;
 
     @Autowired
     private RabbitMqQueueReceiver rabbitMqQueueReceiver;
@@ -63,8 +59,9 @@ public class RabbitMqConfigTest {
         messageData.setChangeKey(ChangeTypeEnum.ADD.getCode());
         messageData.setChangeData(null);
 
-        mqProduce.sendToMq(messageData);
-        rabbitMqSendClient.sendQueue(queueName, "2");
+        QueueName queueName = new QueueName(QueueNameEnum.AMS.getSystem(),QueueNameEnum.AMS.getModule(),QueueNameEnum.AMS.getFunction());
+        mqProduceClient.sendToMq(queueName,messageData);
+
     }
 
     @Test

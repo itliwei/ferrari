@@ -1,6 +1,5 @@
 package com.ziroom.ferrari.produce;
 
-import com.alibaba.druid.support.json.JSONUtils;
 import com.dianping.cat.Cat;
 import com.dianping.cat.message.Transaction;
 import com.ziroom.ferrari.domain.MessageData;
@@ -23,12 +22,26 @@ import java.util.Date;
  */
 @Slf4j
 @Service
-public class MqProduce {
+public class MqProduceClient {
 
-    @Autowired
-    private static RabbitMqSendClient rabbitMqSendClient;
-    @Autowired
+    private RabbitMqSendClient rabbitMqSendClient;
+
     private RabbitConnectionFactory rabbitConnectionFactory;
+
+    public MqProduceClient() {
+        initRabbitConnectionFactory();
+    }
+
+    public void initRabbitConnectionFactory(){
+        //如果factory为空，创建factory
+         if(rabbitConnectionFactory == null){
+             rabbitConnectionFactory = new RabbitConnectionFactory();
+         }
+        //如果client为空，创建client
+        if (rabbitMqSendClient == null){
+            rabbitMqSendClient = new RabbitMqSendClient(rabbitConnectionFactory);
+        }
+    }
 
     public void sendToMq(QueueName queueName ,MessageData messageData) {
         Transaction t = Cat.newTransaction("Service", "Sending data to mq");
@@ -37,9 +50,8 @@ public class MqProduce {
                 + queueName.getModule() + "-" + queueName.getFunction());
         try {
             Cat.logEvent("INFO", "Sending data to MQ");
-            String s = messageData.toString();
             rabbitMqSendClient.sendQueue(queueName, messageData.toString());
-            Cat.logEvent("INFO", Thread.currentThread().getStackTrace()[1].getMethodName(), Transaction.SUCCESS, JSONUtils.toJSONString(messageData));
+            Cat.logEvent("INFO", Thread.currentThread().getStackTrace()[1].getMethodName(), Transaction.SUCCESS, messageData.toString());
             Cat.logMetricForCount("Sending to MQ");
             t.setStatus(Transaction.SUCCESS);
         } catch (Exception ex) {
@@ -50,21 +62,5 @@ public class MqProduce {
         } finally {
             t.complete();
         }
-    }
-
-    public  static void  main(String[] args){
-
-        RabbitConnectionFactory rabbitConnectionFactory = new RabbitConnectionFactory();
-        MqProduce mqProduce = new MqProduce();
-        MessageData messageData = new MessageData();
-        messageData.setMsgId("aaa");
-        messageData.setChangeTime(DateUtils.format2Long(new Date()));
-        messageData.setProduceTime(DateUtils.format2Long(new Date()));
-        messageData.setChangeKey(ChangeTypeEnum.ADD.getCode());
-        messageData.setChangeData(null);
-        rabbitMqSendClient = new RabbitMqSendClient(rabbitConnectionFactory);
-        QueueNameEnum ams = QueueNameEnum.AMS;
-        QueueName queueName = new QueueName(ams.getSystem(),ams.getModule(),ams.getFunction());
-        mqProduce.sendToMq(queueName,messageData);
     }
 }

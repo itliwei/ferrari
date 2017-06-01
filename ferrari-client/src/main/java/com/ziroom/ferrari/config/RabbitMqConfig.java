@@ -1,5 +1,6 @@
 package com.ziroom.ferrari.config;
 
+import com.ziroom.ferrari.produce.MqProduceClient;
 import com.ziroom.gaea.mq.rabbitmq.client.RabbitMqSendClient;
 import com.ziroom.gaea.mq.rabbitmq.factory.RabbitConnectionFactory;
 import com.ziroom.gaea.mq.rabbitmq.receive.queue.ExecutorRabbitMqQueueReceiver;
@@ -46,5 +47,10 @@ public class RabbitMqConfig {
         excutorRabbitMqQueueReceiver.setRabbitConnectionFactory(rabbitConnectionFactory);
         excutorRabbitMqQueueReceiver.setPoolSize(5);
         return excutorRabbitMqQueueReceiver;
+    }
+
+    @Bean
+    public MqProduceClient mqProduceClient() {
+        return new MqProduceClient();
     }
 }
