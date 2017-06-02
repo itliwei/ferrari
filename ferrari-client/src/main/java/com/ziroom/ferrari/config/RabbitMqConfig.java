@@ -1,6 +1,5 @@
 package com.ziroom.ferrari.config;
 
-import com.google.common.base.Strings;
 import com.ziroom.ferrari.produce.MqProduceClient;
 import com.ziroom.gaea.mq.rabbitmq.client.RabbitMqSendClient;
 import com.ziroom.gaea.mq.rabbitmq.factory.RabbitConnectionFactory;
@@ -9,6 +8,7 @@ import com.ziroom.gaea.mq.rabbitmq.receive.queue.RabbitMqQueueReceiver;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
 
 /**
  * RabbitMq 注入bean
@@ -54,4 +54,5 @@ public class RabbitMqConfig {
     public MqProduceClient mqProduceClient() {
         return new MqProduceClient();
     }
+
 }

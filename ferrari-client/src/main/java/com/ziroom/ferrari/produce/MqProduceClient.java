@@ -2,88 +2,103 @@ package com.ziroom.ferrari.produce;
 
 import com.dianping.cat.Cat;
 import com.dianping.cat.message.Transaction;
+import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
+import com.ziroom.ferrari.convert.MessageConvert;
+import com.ziroom.ferrari.dao.DataChangeMessageDao;
+import com.ziroom.ferrari.domain.DataChangeMessage;
 import com.ziroom.ferrari.domain.MessageData;
 import com.ziroom.ferrari.enums.ChangeTypeEnum;
+import com.ziroom.ferrari.enums.MsgStatusEnum;
 import com.ziroom.ferrari.enums.QueueNameEnum;
+import com.ziroom.ferrari.service.MqProduceService;
+import com.ziroom.ferrari.task.SendToMqTask;
 import com.ziroom.gaea.mq.rabbitmq.client.RabbitMqSendClient;
 import com.ziroom.gaea.mq.rabbitmq.entity.QueueName;
 import com.ziroom.gaea.mq.rabbitmq.exception.GaeaRabbitMQException;
 import com.ziroom.gaea.mq.rabbitmq.factory.RabbitConnectionFactory;
 import com.ziroom.rent.common.application.EnvHelper;
+import com.ziroom.rent.common.idgenerator.ObjectIdGenerator;
+import com.ziroom.rent.common.orm.query.Criteria;
 import com.ziroom.rent.common.util.DateUtils;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.LinkedBlockingQueue;
 
 
 /**
  * Created by homelink on 2017/5/31 0031.
  */
+@Getter
 @Slf4j
 @Service
 public class MqProduceClient {
+    BlockingQueue<MessageData> retryQueue = new LinkedBlockingQueue<>();
     @Autowired
-    private RabbitMqSendClient rabbitMqSendClient;
+    private MqProduceService mqProduceService;
     @Autowired
-    private RabbitConnectionFactory rabbitConnectionFactory;
+    private DataChangeMessageDao dataChangeMessageDao;
+    @Autowired
+    private ExecutorService commonExecutorService;
     //环境变量
     private String currentEnv;
+    //枚举类
+    private QueueNameEnum queueNameEnum;
 
 
     public MqProduceClient() {
         currentEnv = EnvHelper.getEnv();
-        //初始化MQ连接接
-        initRabbitConnection();
     }
 
-    public void initRabbitConnection(){
-        //如果factory为空，创建factory
-         if(rabbitConnectionFactory == null){
-             rabbitConnectionFactory = new RabbitConnectionFactory();
-         }
-        //如果client为空，创建client
-        if (rabbitMqSendClient == null){
-            rabbitMqSendClient = new RabbitMqSendClient(rabbitConnectionFactory);
+    /**
+     * 发送消息
+     * @param queueNameEnum MessageData
+     * @param messageData QueueNameEnum
+     */
+    public int sendMsg(QueueNameEnum queueNameEnum ,MessageData messageData) {
+        this.queueNameEnum = queueNameEnum;
+        Preconditions.checkNotNull(queueNameEnum,"queueNameEnum 为空");
+        Preconditions.checkNotNull(messageData,"messageData 为空");
+
+        //生产msgId
+        messageData.setMsgId(ObjectIdGenerator.nextValue());
+        DataChangeMessage dataChangeMessage = MessageConvert.convertMessageData(messageData);
+
+        dataChangeMessage.setMsgSystem(queueNameEnum.getSystem());
+        dataChangeMessage.setMsgModule(queueNameEnum.getModule());
+        dataChangeMessage.setMsgFunction(queueNameEnum.getSystem());
+        dataChangeMessageDao.insert(dataChangeMessage);
+        //获取插入后的记录
+        dataChangeMessage = dataChangeMessageDao.findOne(Criteria.where("msgId",dataChangeMessage.getMsgId()));
+        //线程池发送MQ（方便异步操作）
+        SendToMqTask mqTask = new SendToMqTask(this ,messageData,dataChangeMessage);
+        commonExecutorService.execute(mqTask);
+        return 1;
+    }
+
+    /**
+     * 每30s 重试一下未发送的
+     */
+    @Scheduled(fixedRate =  30 * 1000L)
+    public void retrySendFailure() {
+        List<DataChangeMessage> dataChangeMessages = dataChangeMessageDao.findList(Criteria.where("msgStatus",
+                MsgStatusEnum.MSG_SEND_FAILURE.getCode()));
+        for (DataChangeMessage dataChangeMessage : dataChangeMessages){
+            MessageData messageData = MessageConvert.convertDataChangeMessage(dataChangeMessage);
+
+            SendToMqTask mqTask = new SendToMqTask(this ,messageData,dataChangeMessage);
+            commonExecutorService.execute(mqTask);
         }
+
     }
 
-    public void sendToMq(QueueNameEnum queueNameEnum ,MessageData messageData) {
-        Transaction t = Cat.newTransaction("Service", "Sending data to mq");
-        log.info("Trace data circle life start");
-        log.info("Sending data to RabbitMq to Channel[{}]", queueNameEnum.getSystem() + "-"
-                + queueNameEnum.getModule() + "-" + queueNameEnum.getFunction());
-        try {
-            QueueName queueName = new QueueName(queueNameEnum.getSystem(),
-                    queueNameEnum.getModule(),queueNameEnum.getFunction());
-            Cat.logEvent("INFO", "Sending data to MQ");
-            rabbitMqSendClient.sendQueue(queueName, messageData.toJsonStr());
-            Cat.logEvent("INFO", Thread.currentThread().getStackTrace()[1].getMethodName(), Transaction.SUCCESS, messageData.toJsonStr());
-            Cat.logMetricForCount("Sending to MQ");
-            t.setStatus(Transaction.SUCCESS);
-        } catch (Exception ex) {
-            log.error("Error occurred during sending data to RabbitMq", ex);
-            Cat.logError(ex);
-            t.setStatus(ex);
-            throw new GaeaRabbitMQException("Error in sending message to mq", ex);
-        } finally {
-            t.complete();
-        }
-    }
-
-    public static  void main(String[] args){
-        MessageData messageData = new MessageData();
-//        messageData.setMsgId();
-        messageData.setChangeTime(DateUtils.format2Long(new Date()));
-        messageData.setProduceTime(DateUtils.format2Long(new Date()));
-        messageData.setChangeKey(ChangeTypeEnum.DELETE.getCode());
-        messageData.setChangeData(null);
-
-        QueueName queueName = new QueueName(QueueNameEnum.AMS.getSystem(),QueueNameEnum.AMS.getModule(),QueueNameEnum.AMS.getFunction());
-        MqProduceClient mqProduceClient = new MqProduceClient();
-
-        mqProduceClient.sendToMq(QueueNameEnum.AMS,messageData);
-    }
 }
