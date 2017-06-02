@@ -1,4 +1,4 @@
-package com.ziroom.ferrari;
+package com.ziroom.ferrari.domain;
 
 import lombok.Getter;
 import lombok.Setter;
