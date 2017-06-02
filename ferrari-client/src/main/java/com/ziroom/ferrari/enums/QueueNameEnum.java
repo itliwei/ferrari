@@ -9,8 +9,8 @@ import lombok.Setter;
 @Getter
 public enum QueueNameEnum {
 
-    AMS("phoenix", "building","sync","资产"),
-    BUILDING("phoenix","ams", "sync","楼盘"),
+    AMS("phoenix", "ams","sync","资产"),
+    BUILDING("phoenix","building", "sync","楼盘"),
     INVENTORY("phoenix","inventory", "sync","库存");
 
     private String system;

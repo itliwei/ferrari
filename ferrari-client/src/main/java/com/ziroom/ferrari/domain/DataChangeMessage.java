@@ -34,7 +34,7 @@ public class DataChangeMessage {
     private String changeEntity;
     //数据的主键
     @Column(value = "change_key")
-    private Integer changeKey;
+    private String changeKey;
     //操作类型 0新增 1修改 2删除 changeType enum
     @Column(value = "change_type")
     private Integer changeType;

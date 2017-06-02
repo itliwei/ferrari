@@ -44,7 +44,6 @@ public class SendToMqTask implements Runnable {
         try {
             //发送时间
             messageData.setProduceTime(DateUtils.format2Long(new Date()));
-
             mqProduceService.sendToMq(queueNameEnum,messageData);
             //发送成功，更新日志记录
             dataChangeMessage.setMsgStatus(MsgStatusEnum.MSG_SEND_SUCCESS.getCode());
@@ -54,10 +53,6 @@ public class SendToMqTask implements Runnable {
             //TODO 异常处理，更改数据状态。要有主键ID！！！消息重试是直接重试还是放入一个 重试队列中？
             dataChangeMessage.setMsgStatus(MsgStatusEnum.MSG_SEND_FAILURE.getCode());
             dataChangeMessageDao.update(dataChangeMessage);
-           /* BlockingQueue<MessageData> retryQueue = mqProduceClient.getRetryQueue();
-            //放入队列
-            retryQueue.offer(messageData);*/
         }
-
     }
 }

@@ -1,7 +1,6 @@
 package com.ziroom.ferrari.domain;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.serializer.SerializerFeature;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -20,7 +19,7 @@ public class MessageData {
     //变更数据实体
     private String changeEntity;
     //数据的主键
-    private Integer changeKey;
+    private String changeKey;
     //操作类型 0新增 1修改 2删除 changeType enum
     private Integer changeType;
     //数据变更时间
@@ -31,7 +30,7 @@ public class MessageData {
     private String changeData;
 
     public String toJsonStr() {
-        return JSON.toJSONString(this,new SerializerFeature[0]);
+        return JSON.toJSONString(this);
     }
 
 }
