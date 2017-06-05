@@ -1,6 +1,7 @@
 package com.ziroom.ferrari.config;
 
 import com.ziroom.ferrari.produce.MqProduceClient;
+import com.ziroom.ferrari.task.MyThreadPool;
 import com.ziroom.gaea.mq.rabbitmq.client.RabbitMqSendClient;
 import com.ziroom.gaea.mq.rabbitmq.factory.RabbitConnectionFactory;
 import com.ziroom.gaea.mq.rabbitmq.receive.queue.ExecutorRabbitMqQueueReceiver;
@@ -8,6 +9,9 @@ import com.ziroom.gaea.mq.rabbitmq.receive.queue.RabbitMqQueueReceiver;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 
 
 /**
@@ -50,9 +54,15 @@ public class RabbitMqConfig {
         return excutorRabbitMqQueueReceiver;
     }
 
-    @Bean
+    @Bean(name = "mqProduceClient")
     public MqProduceClient mqProduceClient() {
         return new MqProduceClient();
+    }
+
+    @Bean(name = "executorService")
+    public ExecutorService initMyThreadPool(){
+        MyThreadPool myThreadPool = new MyThreadPool();
+        return myThreadPool.executorService;
     }
 
 }

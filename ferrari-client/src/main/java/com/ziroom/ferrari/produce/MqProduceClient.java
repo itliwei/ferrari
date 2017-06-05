@@ -16,10 +16,10 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -29,22 +29,26 @@ import java.util.concurrent.LinkedBlockingQueue;
  */
 @Getter
 @Slf4j
-@Service
 public class MqProduceClient {
-    BlockingQueue<MessageData> retryQueue = new LinkedBlockingQueue<>();
     @Autowired
     private MqProduceService mqProduceService;
-    @Autowired
+
     private DataChangeMessageDao dataChangeMessageDao;
     @Autowired
-    private ExecutorService commonExecutorService;
+    private Executor executorService ;
     //枚举类
     private QueueNameEnum queueNameEnum;
 
-    public MqProduceClient() {
-        if(mqProduceService == null){
-            mqProduceService = new MqProduceServiceImpl();
+    public MqProduceClient(){
+
+    }
+
+    public MqProduceClient( DataChangeMessageDao dataChangeMessageDao) {
+
+        if (mqProduceService == null){
+            this.mqProduceService = new MqProduceServiceImpl();
         }
+        this.dataChangeMessageDao = dataChangeMessageDao;
     }
 
     /**
@@ -68,7 +72,7 @@ public class MqProduceClient {
         dataChangeMessageDao.insert(dataChangeMessage);
         //线程池发送MQ
         SendToMqTask mqTask = new SendToMqTask(this ,messageData,dataChangeMessage);
-        commonExecutorService.execute(mqTask);
+        executorService.execute(mqTask);
         return 1;
     }
 
@@ -83,7 +87,7 @@ public class MqProduceClient {
             MessageData messageData = MessageConvert.convertDataChangeMessage(dataChangeMessage);
 
             SendToMqTask mqTask = new SendToMqTask(this ,messageData,dataChangeMessage);
-            commonExecutorService.execute(mqTask);
+            executorService.execute(mqTask);
         }
     }
 }

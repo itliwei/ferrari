@@ -39,7 +39,7 @@ public class SendToMqTask implements Runnable {
     @Override
     public void run() {
         QueueNameEnum queueNameEnum = mqProduceClient.getQueueNameEnum();
-        log.info("SendToMqTask run：",queueNameEnum.getModule(),messageData.toJsonStr());
+        log.info("SendToMqTask :{} ,ThreadId:{} run：{}",queueNameEnum.getFunction(),Thread.currentThread().getName(),queueNameEnum.getModule(),messageData.toJsonStr());
         try {
             //发送时间
             messageData.setProduceTime(DateUtils.format2Long(new Date()));
