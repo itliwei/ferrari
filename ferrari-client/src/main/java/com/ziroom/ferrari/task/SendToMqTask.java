@@ -6,14 +6,13 @@ import com.ziroom.ferrari.domain.MessageData;
 import com.ziroom.ferrari.enums.MsgStatusEnum;
 import com.ziroom.ferrari.enums.QueueNameEnum;
 import com.ziroom.ferrari.produce.MqProduceClient;
-import com.ziroom.ferrari.service.MqProduceService;
+import com.ziroom.ferrari.service.MqProduceServiceImpl;
 import com.ziroom.gaea.mq.rabbitmq.exception.GaeaRabbitMQException;
 import com.ziroom.rent.common.util.DateUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Date;
-import java.util.concurrent.BlockingQueue;
 
 /**
  * 发送消息线程任务
@@ -22,7 +21,7 @@ import java.util.concurrent.BlockingQueue;
 @Slf4j
 public class SendToMqTask implements Runnable {
     @Autowired
-    private MqProduceService mqProduceService;
+    private MqProduceServiceImpl mqProduceServiceImpl;
     @Autowired
     private DataChangeMessageDao dataChangeMessageDao;
 
@@ -44,7 +43,7 @@ public class SendToMqTask implements Runnable {
         try {
             //发送时间
             messageData.setProduceTime(DateUtils.format2Long(new Date()));
-            mqProduceService.sendToMq(queueNameEnum,messageData);
+            mqProduceServiceImpl.sendToMq(queueNameEnum,messageData);
             //发送成功，更新日志记录
             dataChangeMessage.setMsgStatus(MsgStatusEnum.MSG_SEND_SUCCESS.getCode());
             dataChangeMessageDao.update(dataChangeMessage);
