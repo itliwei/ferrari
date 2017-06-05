@@ -7,6 +7,7 @@ import com.ziroom.ferrari.domain.DataChangeMessage;
 import com.ziroom.ferrari.domain.MessageData;
 import com.ziroom.ferrari.enums.MsgStatusEnum;
 import com.ziroom.ferrari.enums.QueueNameEnum;
+import com.ziroom.ferrari.service.MqProduceService;
 import com.ziroom.ferrari.service.MqProduceServiceImpl;
 import com.ziroom.ferrari.task.SendToMqTask;
 import com.ziroom.rent.common.application.EnvHelper;
@@ -33,20 +34,19 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class MqProduceClient {
     BlockingQueue<MessageData> retryQueue = new LinkedBlockingQueue<>();
     @Autowired
-    private MqProduceServiceImpl mqProduceServiceImpl;
+    private MqProduceService mqProduceServiceImpl;
     @Autowired
     private DataChangeMessageDao dataChangeMessageDao;
     @Autowired
     private ExecutorService commonExecutorService;
+    //环境变量
+    private String currentEnv;
     //枚举类
     private QueueNameEnum queueNameEnum;
 
     public MqProduceClient() {
         if(mqProduceServiceImpl == null){
             mqProduceServiceImpl = new MqProduceServiceImpl();
-        }
-        if (dataChangeMessageDao ==null){
-            dataChangeMessageDao = new DataChangeMessageDao();
         }
     }
 
