@@ -10,7 +10,6 @@ import com.ziroom.ferrari.enums.QueueNameEnum;
 import com.ziroom.ferrari.service.MqProduceService;
 import com.ziroom.ferrari.service.MqProduceServiceImpl;
 import com.ziroom.ferrari.task.SendToMqTask;
-import com.ziroom.rent.common.application.EnvHelper;
 import com.ziroom.rent.common.idgenerator.ObjectIdGenerator;
 import com.ziroom.rent.common.orm.query.Criteria;
 import lombok.Getter;
@@ -34,24 +33,23 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class MqProduceClient {
     BlockingQueue<MessageData> retryQueue = new LinkedBlockingQueue<>();
     @Autowired
-    private MqProduceService mqProduceServiceImpl;
+    private MqProduceService mqProduceService;
     @Autowired
     private DataChangeMessageDao dataChangeMessageDao;
     @Autowired
     private ExecutorService commonExecutorService;
-    //环境变量
-    private String currentEnv;
     //枚举类
     private QueueNameEnum queueNameEnum;
 
     public MqProduceClient() {
-        if(mqProduceServiceImpl == null){
-            mqProduceServiceImpl = new MqProduceServiceImpl();
+        if(mqProduceService == null){
+            mqProduceService = new MqProduceServiceImpl();
         }
     }
 
     /**
      * 发送消息
+     * @author liwei
      * @param queueNameEnum MessageData
      * @param messageData QueueNameEnum
      */

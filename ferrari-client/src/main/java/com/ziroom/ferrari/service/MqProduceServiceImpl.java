@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 /**
  * Created by homelink on 2017/6/2 0002.
  */
+
 @Slf4j
 @Service
 public class MqProduceServiceImpl implements MqProduceService{
