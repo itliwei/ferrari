@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:reg="http://www.dangdang.com/schema/ddframe/reg"
+       xmlns:job="http://www.dangdang.com/schema/ddframe/job"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                        http://www.springframework.org/schema/beans/spring-beans.xsd
+                        http://www.dangdang.com/schema/ddframe/reg
+                        http://www.dangdang.com/schema/ddframe/reg/reg.xsd
+                        http://www.dangdang.com/schema/ddframe/job
+                        http://www.dangdang.com/schema/ddframe/job/job.xsd
+      http://www.springframework.org/schema/context
+      http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <context:component-scan base-package="com.ziroom.busrecoup"/>
+
+    <reg:zookeeper id="regCenter" server-lists="${job.regCenter.serverLists}" namespace="pzjc-job"
+                   base-sleep-time-milliseconds="1000" max-sleep-time-milliseconds="3000" max-retries="3"/>
+    <!--作业名称必须为busRecoupJob-->
+    <job:simple id="busRecoupJob" class="com.ziroom.busrecoup.elasticjob.SimpleJob"
+                registry-center-ref="regCenter" sharding-total-count="${busRecoupJob.shardingTotalCount}"
+                cron="${busRecoupJob.cron}" description="通用业务补偿Job"/>
+</beans>

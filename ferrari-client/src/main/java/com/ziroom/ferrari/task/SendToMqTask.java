@@ -25,20 +25,19 @@ public class SendToMqTask implements Runnable {
     @Autowired
     private DataChangeMessageDao dataChangeMessageDao;
 
-    private MqProduceClient mqProduceClient;
+    private QueueNameEnum queueNameEnum;
     private MessageData messageData;
     private DataChangeMessage dataChangeMessage;
 
-    public SendToMqTask(MqProduceClient mqProduceClient , MessageData messageData,
+    public SendToMqTask(QueueNameEnum queueNameEnum , MessageData messageData,
                         DataChangeMessage dataChangeMessage) {
         this.messageData = messageData;
         this.dataChangeMessage = dataChangeMessage;
-        this.mqProduceClient = mqProduceClient;
+        this.queueNameEnum = queueNameEnum;
     }
 
     @Override
     public void run() {
-        QueueNameEnum queueNameEnum = mqProduceClient.getQueueNameEnum();
         log.info("SendToMqTask :{} ,ThreadId:{} run：{}",queueNameEnum.getFunction(),Thread.currentThread().getName(),queueNameEnum.getModule(),messageData.toJsonStr());
         try {
             //发送时间

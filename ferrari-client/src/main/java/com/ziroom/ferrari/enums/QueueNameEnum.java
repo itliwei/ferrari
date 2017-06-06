@@ -25,4 +25,21 @@ public enum QueueNameEnum {
         this.desc = desc;
     }
 
+    /**
+     * 通过module查找queueName
+     * @param module
+     * @return
+     */
+    public static QueueNameEnum getQueueNameEnum(String system,String module,String function){
+        QueueNameEnum[] values = QueueNameEnum.values();
+        for (QueueNameEnum queueNameEnum :values ){
+            if (queueNameEnum.getSystem().equals(system) &&
+                    queueNameEnum.getModule().equals(module) &&
+                    queueNameEnum.getFunction().equals(function)){
+                return queueNameEnum;
+            }
+        }
+        return null;
+    }
+
 }

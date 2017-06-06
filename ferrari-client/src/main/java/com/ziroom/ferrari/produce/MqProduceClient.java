@@ -13,26 +13,27 @@ import com.ziroom.ferrari.task.SendToMqTask;
 import com.ziroom.rent.common.idgenerator.ObjectIdGenerator;
 import com.ziroom.rent.common.orm.query.Criteria;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Executor;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.LinkedBlockingQueue;
 
 
 /**
  * Created by homelink on 2017/5/31 0031.
  */
 @Getter
+@Setter
 @Slf4j
+@Service
 public class MqProduceClient {
     @Autowired
     private MqProduceService mqProduceService;
-
+    @Autowired
     private DataChangeMessageDao dataChangeMessageDao;
     @Autowired
     private Executor executorService ;
@@ -71,23 +72,8 @@ public class MqProduceClient {
         dataChangeMessage.setMsgFunction(queueNameEnum.getSystem());
         dataChangeMessageDao.insert(dataChangeMessage);
         //线程池发送MQ
-        SendToMqTask mqTask = new SendToMqTask(this ,messageData,dataChangeMessage);
+        SendToMqTask mqTask = new SendToMqTask(queueNameEnum ,messageData,dataChangeMessage);
         executorService.execute(mqTask);
         return 1;
-    }
-
-    /**
-     * 每30s 重试一下未发送的
-     */
-    @Scheduled(fixedRate =  30 * 1000L)
-    public void retrySendFailure() {
-        List<DataChangeMessage> dataChangeMessages = dataChangeMessageDao.findList(Criteria.where("msgStatus",
-                MsgStatusEnum.MSG_SEND_FAILURE.getCode()));
-        for (DataChangeMessage dataChangeMessage : dataChangeMessages){
-            MessageData messageData = MessageConvert.convertDataChangeMessage(dataChangeMessage);
-
-            SendToMqTask mqTask = new SendToMqTask(this ,messageData,dataChangeMessage);
-            executorService.execute(mqTask);
-        }
     }
 }
