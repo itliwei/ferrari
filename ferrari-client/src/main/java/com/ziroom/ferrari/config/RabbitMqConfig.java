@@ -59,10 +59,5 @@ public class RabbitMqConfig {
         return new MqProduceClient();
     }
 
-    @Bean(name = "executorService")
-    public ExecutorService initMyThreadPool(){
-        MyThreadPool myThreadPool = new MyThreadPool();
-        return myThreadPool.executorService;
-    }
 
 }

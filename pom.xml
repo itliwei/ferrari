@@ -23,7 +23,16 @@
         <module>ferrari-client</module>
     </modules>
     <properties>
-        <rent-common.version>2.0.0-RELEASE</rent-common.version>
+        <rent-common-version>5.4.0-SNAPSHOT</rent-common-version>
+        <file_encoding>UTF-8</file_encoding>
+        <!-- Maven插件版本定义 apache-maven-3.3.3版本默认版本插件版本 -->
+        <maven_source_plugin_version>2.6</maven_source_plugin_version>
+        <maven_compiler_plugin_version>3.1</maven_compiler_plugin_version>
+        <maven_jar_plugin_version>2.4</maven_jar_plugin_version>
+        <maven_war_plugin_version>2.2</maven_war_plugin_version>
+        <maven_install_plugin_version>2.4</maven_install_plugin_version>
+        <maven_deploy_plugin_version>2.7</maven_deploy_plugin_version>
+        <maven-surefire-plugin_version>2.12.4</maven-surefire-plugin_version>
     </properties>
     <dependencies>
         <dependency>
@@ -42,6 +51,99 @@
             </exclusions>
         </dependency>
     </dependencies>
-
+    <build>
+    <resources>
+        <resource>
+            <directory>src/main/java</directory>
+            <includes>
+                <include>**/*.xml</include>
+            </includes>
+        </resource>
+        <resource>
+            <directory>src/main/resources</directory>
+            <includes>
+                <include>**/*.*</include>
+            </includes>
+        </resource>
+    </resources>
+    <pluginManagement>
+        <plugins>
+            <!-- compiler插件, 设定JDK版本 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven_compiler_plugin_version}</version>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                    <encoding>${file_encoding}</encoding>
+                </configuration>
+            </plugin>
+            <!-- test插件 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>${maven-surefire-plugin_version}</version>
+                <configuration>
+                    <!--<skip>true</skip> -->
+                    <skip>true</skip>
+                    <failIfNoTests>false</failIfNoTests>
+                    <includes>
+                        <include>**/*Test.java</include>
+                    </includes>
+                </configuration>
+            </plugin>
+            <!-- resource插件, 设定编码 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>${maven_source_plugin_version}</version>
+                <configuration>
+                    <encoding>${file_encoding}</encoding>
+                </configuration>
+            </plugin>
+            <!-- install插件 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-install-plugin</artifactId>
+                <version>${maven_install_plugin_version}</version>
+            </plugin>
+            <!-- deploy插件 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <version>${maven_deploy_plugin_version}</version>
+            </plugin>
+            <!-- war插件 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>${maven_war_plugin_version}</version>
+            </plugin>
+            <!-- jar插件 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>${maven_jar_plugin_version}</version>
+            </plugin>
+        </plugins>
+    </pluginManagement>
+    </build>
+    <distributionManagement>
+        <repository>
+            <id>ziroom</id>
+            <url>http://mvn.ziroom.com/ams-release</url>
+        </repository>
+        <snapshotRepository>
+            <id>ziroom</id>
+            <url>http://mvn.ziroom.com/ams-snapshot</url>
+        </snapshotRepository>
+    </distributionManagement>
+    <repositories>
+        <repository>
+            <id>artifactory</id>
+            <url>http://mvn.ziroom.com/public</url>
+        </repository>
+    </repositories>
 
 </project>

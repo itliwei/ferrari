@@ -14,7 +14,6 @@ public class FerrariApplicationTests {
 		if (mqProduceClient == null){
 			mqProduceClient = new MqProduceClient();
 		}
-		DataChangeMessageDao dataChangeMessageDao = mqProduceClient.getDataChangeMessageDao();
 
 		System.out.print("1");
 	}

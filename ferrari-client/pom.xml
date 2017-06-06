@@ -17,9 +17,8 @@
         <java.version>1.8</java.version>
         <spring-cloud.version>Camden.RELEASE</spring-cloud.version>
         <lombok.version>1.16.4</lombok.version>
-        <rent-common-version>5.5.5-SNAPSHOT</rent-common-version>
         <!--rent util -->
-        <rent-common.version>5.4.0-SNAPSHOT</rent-common.version>
+        <rent-common-version>5.4.0-SNAPSHOT</rent-common-version>
         <rabbit-gaea-version>2.0.2-RELEASE</rabbit-gaea-version>
         <file_encoding>UTF-8</file_encoding>
         <!-- Maven插件版本定义 apache-maven-3.3.3版本默认版本插件版本 -->
