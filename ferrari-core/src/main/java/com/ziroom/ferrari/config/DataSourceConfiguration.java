@@ -1,6 +1,8 @@
 package com.ziroom.ferrari.config;
 
 import com.alibaba.druid.pool.DruidDataSource;
+import com.ziroom.ferrari.dao.DataChangeMessageDao;
+import com.ziroom.ferrari.produce.MqProduceClient;
 import com.ziroom.platform.tesla.druid.filter.CatStatFilter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -21,8 +23,6 @@ import static com.ziroom.ferrari.constants.Constants.TEST_KEY;
  */
 @Configuration
 public class DataSourceConfiguration {
-
-
     @Bean
     public CatStatFilter catStatFilter() {
         return new CatStatFilter();
@@ -44,6 +44,10 @@ public class DataSourceConfiguration {
         return dataSource;
     }
 
+    @Bean(name = "dataChangeMessageDao")
+    public DataChangeMessageDao getDataChangeMessageDao() {
+        return new DataChangeMessageDao();
+    }
 
 
 

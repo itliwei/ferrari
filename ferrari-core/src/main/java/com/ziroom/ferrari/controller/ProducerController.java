@@ -3,6 +3,10 @@ package com.ziroom.ferrari.controller;
 import com.alibaba.rocketmq.client.producer.DefaultMQProducer;
 import com.alibaba.rocketmq.client.producer.SendResult;
 import com.alibaba.rocketmq.common.message.Message;
+import com.ziroom.ferrari.dao.DataChangeMessageDao;
+import com.ziroom.ferrari.enums.QueueNameEnum;
+import com.ziroom.ferrari.produce.MqProduceClient;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -15,6 +19,10 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 public class ProducerController {
+    @Autowired
+    private MqProduceClient mqProduceClient;
+    @Autowired
+    private DataChangeMessageDao dataChangeMessageDao;
 
     @RequestMapping(value = "/producer", method = RequestMethod.GET)
     public void produer(){
@@ -53,6 +61,11 @@ public class ProducerController {
         }
     }
 
+    @RequestMapping(value = "/mqProduce", method = RequestMethod.GET)
+    public void mqProduce(){
+        mqProduceClient.setDataChangeMessageDao(dataChangeMessageDao);
+        mqProduceClient.sendMsg(QueueNameEnum.AMS,null);
+    }
 
 
 

@@ -7,3 +7,13 @@ jdbc:
   password: ziroomdb
 
 
+logging:
+  level:
+    ROOT: INFO
+    org.springframework.web: INFO
+
+spring:
+  profiles:
+    active: test
+  application:
+    name: ferrari

@@ -8,4 +8,13 @@ jdbc:
   username: dev_sms
   password: ziroomdb
 
+logging:
+  level:
+    ROOT: INFO
+    org.springframework.web: INFO
 
+spring:
+  profiles:
+    active: prod
+  application:
+    name: ferrari
