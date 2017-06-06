@@ -33,7 +33,7 @@
     </properties>
 
     <dependencies>
-        <!-- mq -->
+        <!-- rabbitMq -->
         <dependency>
             <groupId>com.ziroom.gaea</groupId>
             <artifactId>gaea-mq-rabbitmq</artifactId>
@@ -75,6 +75,17 @@
             <groupId>com.ziroom</groupId>
             <artifactId>bus-recoup</artifactId>
             <version>4.0.0-RELEASE</version>
+        </dependency>
+        <!-- 配置中心 -->
+        <dependency>
+            <groupId>com.ziroom</groupId>
+            <artifactId>dragon-client-spring</artifactId>
+            <version>1.1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.ziroom</groupId>
+            <artifactId>dragon-client</artifactId>
+            <version>1.1.1</version>
         </dependency>
     </dependencies>
     <build>

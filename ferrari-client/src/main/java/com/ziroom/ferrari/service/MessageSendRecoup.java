@@ -8,17 +8,24 @@ import com.ziroom.ferrari.domain.MessageData;
 import com.ziroom.ferrari.enums.MsgStatusEnum;
 import com.ziroom.ferrari.enums.QueueNameEnum;
 import com.ziroom.ferrari.task.SendToMqTask;
+import com.ziroom.rent.common.application.log.ApplicationLogger;
 import com.ziroom.rent.common.orm.query.Criteria;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 
 /**
- * Created by homelink on 2017/6/6 0006.
+ * 消息重试job
+ * Created by liwei on 2017/6/6 0006.
  */
+@Slf4j
+@Component
 public class MessageSendRecoup implements IRecoup {
+
     @Autowired
     private Executor executorService;
     @Autowired
@@ -43,6 +50,6 @@ public class MessageSendRecoup implements IRecoup {
 
     @Override
     public void afterRecoup(String s, String s1, String s2) throws Exception {
-
+        log.error("Trace data circle life start");
     }
 }

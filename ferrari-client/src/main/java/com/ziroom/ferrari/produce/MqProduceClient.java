@@ -11,15 +11,12 @@ import com.ziroom.ferrari.service.MqProduceService;
 import com.ziroom.ferrari.service.MqProduceServiceImpl;
 import com.ziroom.ferrari.task.SendToMqTask;
 import com.ziroom.rent.common.idgenerator.ObjectIdGenerator;
-import com.ziroom.rent.common.orm.query.Criteria;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.concurrent.Executor;
 
 
