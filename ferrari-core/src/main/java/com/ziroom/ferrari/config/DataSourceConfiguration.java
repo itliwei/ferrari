@@ -1,15 +1,15 @@
 package com.ziroom.ferrari.config;
 
 import com.alibaba.druid.pool.DruidDataSource;
-import com.ziroom.ferrari.dao.DataChangeMessageDao;
-import com.ziroom.ferrari.produce.MqProduceClient;
 import com.ziroom.platform.tesla.druid.filter.CatStatFilter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 
 import javax.sql.DataSource;
+import java.io.Serializable;
 import java.util.Collections;
 
 import static com.ziroom.ferrari.constants.Constants.DEV_KEY;
@@ -22,15 +22,15 @@ import static com.ziroom.ferrari.constants.Constants.TEST_KEY;
  * @Time 下午4:00
  */
 @Configuration
-public class DataSourceConfiguration {
+public class DataSourceConfiguration{
     @Bean
     public CatStatFilter catStatFilter() {
         return new CatStatFilter();
     }
 
-
-    @Bean(initMethod = "init",destroyMethod = "close")
+    @Bean(name = "masterDataSource",initMethod = "init",destroyMethod = "close")
     @Profile({DEV_KEY,PROD_KEY,TEST_KEY})
+    @Primary
     public DataSource druidDataSource(@Value("${jdbc.driverClassName}")String driver,
                                       @Value("${jdbc.url}")String url,
                                       @Value("${jdbc.username}")String username,
@@ -43,12 +43,6 @@ public class DataSourceConfiguration {
         dataSource.setProxyFilters(Collections.singletonList(catStatFilter()));
         return dataSource;
     }
-
-    @Bean(name = "dataChangeMessageDao")
-    public DataChangeMessageDao getDataChangeMessageDao() {
-        return new DataChangeMessageDao();
-    }
-
 
 
 }

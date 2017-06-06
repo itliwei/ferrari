@@ -1,15 +1,22 @@
 package com.ziroom.ferrari.controller;
 
+import com.alibaba.druid.support.json.JSONUtils;
 import com.alibaba.rocketmq.client.producer.DefaultMQProducer;
 import com.alibaba.rocketmq.client.producer.SendResult;
 import com.alibaba.rocketmq.common.message.Message;
+import com.fasterxml.jackson.annotation.ObjectIdGenerator;
 import com.ziroom.ferrari.dao.DataChangeMessageDao;
+import com.ziroom.ferrari.domain.MessageData;
+import com.ziroom.ferrari.enums.ChangeTypeEnum;
 import com.ziroom.ferrari.enums.QueueNameEnum;
 import com.ziroom.ferrari.produce.MqProduceClient;
+import com.ziroom.rent.common.util.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Date;
 
 /**
  * @Author wangtt
@@ -63,8 +70,13 @@ public class ProducerController {
 
     @RequestMapping(value = "/mqProduce", method = RequestMethod.GET)
     public void mqProduce(){
-        mqProduceClient.setDataChangeMessageDao(dataChangeMessageDao);
-        mqProduceClient.sendMsg(QueueNameEnum.AMS,null);
+        MessageData messageData = new MessageData();
+        messageData.setChangeTime(DateUtils.format2Long(new Date()));
+        messageData.setChangeKey("11111");
+        messageData.setChangeType(ChangeTypeEnum.ADD.getCode());
+        messageData.setChangeEntityName("room");
+        messageData.setChangeData(messageData.toJsonStr());
+        mqProduceClient.sendMsg(QueueNameEnum.AMS,messageData);
     }
 
 
