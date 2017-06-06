@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 /**
  * Created by homelink on 2017/6/5 0005.
  */
-@Service
 public interface MqProduceService {
     BaseResult sendToMq(QueueNameEnum queueNameEnum, MessageData messageData);
 }

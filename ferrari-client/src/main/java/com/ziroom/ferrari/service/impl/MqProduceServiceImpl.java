@@ -1,10 +1,11 @@
-package com.ziroom.ferrari.service;
+package com.ziroom.ferrari.service.impl;
 
 import com.dianping.cat.Cat;
 import com.dianping.cat.message.Transaction;
 import com.ziroom.ferrari.domain.MessageData;
 import com.ziroom.ferrari.enums.QueueNameEnum;
 import com.ziroom.ferrari.result.BaseResult;
+import com.ziroom.ferrari.service.MqProduceService;
 import com.ziroom.gaea.mq.rabbitmq.client.RabbitMqSendClient;
 import com.ziroom.gaea.mq.rabbitmq.entity.QueueName;
 import com.ziroom.gaea.mq.rabbitmq.exception.GaeaRabbitMQException;
@@ -20,7 +21,7 @@ import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
-public class MqProduceServiceImpl implements MqProduceService{
+public class MqProduceServiceImpl implements MqProduceService {
     @Autowired
     private RabbitMqSendClient rabbitMqSendClient;
     @Autowired

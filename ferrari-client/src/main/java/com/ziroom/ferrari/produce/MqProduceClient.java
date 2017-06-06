@@ -5,10 +5,13 @@ import com.ziroom.ferrari.convert.MessageConvert;
 import com.ziroom.ferrari.dao.DataChangeMessageDao;
 import com.ziroom.ferrari.domain.DataChangeMessage;
 import com.ziroom.ferrari.domain.MessageData;
-import com.ziroom.ferrari.enums.MsgStatusEnum;
 import com.ziroom.ferrari.enums.QueueNameEnum;
+import com.ziroom.ferrari.enums.ResultEnum;
+import com.ziroom.ferrari.result.BaseResult;
+import com.ziroom.ferrari.service.DataChangeMessageService;
 import com.ziroom.ferrari.service.MqProduceService;
-import com.ziroom.ferrari.service.MqProduceServiceImpl;
+import com.ziroom.ferrari.service.impl.DataChangeMessageServiceImpl;
+import com.ziroom.ferrari.service.impl.MqProduceServiceImpl;
 import com.ziroom.ferrari.task.SendToMqTask;
 import com.ziroom.rent.common.idgenerator.ObjectIdGenerator;
 import lombok.Getter;
@@ -31,22 +34,17 @@ public class MqProduceClient {
     @Autowired
     private MqProduceService mqProduceService;
     @Autowired
-    private DataChangeMessageDao dataChangeMessageDao;
+    private DataChangeMessageService dataChangeMessageService;
     @Autowired
     private Executor executorService ;
-    //枚举类
-    private QueueNameEnum queueNameEnum;
 
     public MqProduceClient(){
-
-    }
-
-    public MqProduceClient( DataChangeMessageDao dataChangeMessageDao) {
-
         if (mqProduceService == null){
             this.mqProduceService = new MqProduceServiceImpl();
         }
-        this.dataChangeMessageDao = dataChangeMessageDao;
+        if (dataChangeMessageService == null){
+            this.dataChangeMessageService = new DataChangeMessageServiceImpl();
+        }
     }
 
     /**
@@ -55,22 +53,28 @@ public class MqProduceClient {
      * @param queueNameEnum MessageData
      * @param messageData QueueNameEnum
      */
-    public int sendMsg(QueueNameEnum queueNameEnum ,MessageData messageData) {
-        this.queueNameEnum = queueNameEnum;
+    public BaseResult sendMsg(QueueNameEnum queueNameEnum , MessageData messageData) {
         Preconditions.checkNotNull(queueNameEnum,"queueNameEnum 为空");
         Preconditions.checkNotNull(messageData,"messageData 为空");
-
+        BaseResult baseResult;
         //生产msgId
         messageData.setMsgId(ObjectIdGenerator.nextValue());
         DataChangeMessage dataChangeMessage = MessageConvert.convertMessageData(messageData);
-
         dataChangeMessage.setMsgSystem(queueNameEnum.getSystem());
         dataChangeMessage.setMsgModule(queueNameEnum.getModule());
         dataChangeMessage.setMsgFunction(queueNameEnum.getSystem());
-        dataChangeMessageDao.insert(dataChangeMessage);
-        //线程池发送MQ
-        SendToMqTask mqTask = new SendToMqTask(queueNameEnum ,messageData,dataChangeMessage);
-        executorService.execute(mqTask);
-        return 1;
+        //插入数据库
+        int count = dataChangeMessageService.insert(dataChangeMessage);
+        //插入成功
+        if(count > 0) {
+            //线程池发送MQ
+            SendToMqTask mqTask = new SendToMqTask(queueNameEnum, messageData, dataChangeMessage);
+            executorService.execute(mqTask);
+            baseResult = new BaseResult(ResultEnum.SUCCESS);
+        }else{
+            baseResult = new BaseResult(ResultEnum.FAILURE);
+            baseResult.setMessage("插入数据库失败");
+        }
+        return baseResult;
     }
 }

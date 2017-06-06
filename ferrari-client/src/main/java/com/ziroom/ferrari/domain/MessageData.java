@@ -16,8 +16,8 @@ public class MessageData {
     private Long id;
     //消息ID
     private String msgId;
-    //变更数据实体
-    private String changeEntity;
+    //变更数据实体名称
+    private String changeEntityName;
     //数据的主键
     private String changeKey;
     //操作类型 0新增 1修改 2删除 changeType enum

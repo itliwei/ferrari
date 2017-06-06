@@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
 import com.ziroom.ferrari.domain.DataChangeMessage;
 import com.ziroom.ferrari.domain.MessageData;
 import com.ziroom.ferrari.enums.MsgStatusEnum;
+import com.ziroom.rent.common.idgenerator.ObjectIdGenerator;
 import com.ziroom.rent.common.util.DateUtils;
 
 import java.util.Date;
@@ -26,7 +27,7 @@ public class MessageConvert {
         dataChangeMessage.setProduceTime(DateUtils.format2Long(new Date()));
         dataChangeMessage.setChangeTime(messageData.getChangeTime());
         dataChangeMessage.setChangeData(messageData.getChangeData());
-        dataChangeMessage.setChangeEntity(messageData.getChangeEntity());
+        dataChangeMessage.setChangeEntityName(messageData.getChangeEntityName());
         dataChangeMessage.setChangeKey(messageData.getChangeKey());
         dataChangeMessage.setChangeType(messageData.getChangeType());
         dataChangeMessage.setMsgStatus(MsgStatusEnum.MSG_UN_SEND.getCode());
@@ -45,7 +46,7 @@ public class MessageConvert {
         messageData.setMsgId(dataChangeMessage.getMsgId());
         messageData.setProduceTime(DateUtils.format2Long(new Date()));
         messageData.setChangeKey(dataChangeMessage.getChangeKey());
-        messageData.setChangeEntity(dataChangeMessage.getChangeEntity());
+        messageData.setChangeEntityName(dataChangeMessage.getChangeEntityName());
         messageData.setChangeTime(dataChangeMessage.getChangeTime());
         messageData.setChangeType(dataChangeMessage.getChangeType());
         messageData.setChangeData(dataChangeMessage.getChangeData());

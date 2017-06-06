@@ -30,8 +30,8 @@ public class DataChangeMessage {
     @Column(value = "msg_status")
     private Integer msgStatus;
     //变更数据实体
-    @Column(value = "change_entity")
-    private String changeEntity;
+    @Column(value = "change_entity_name")
+    private String changeEntityName;
     //数据的主键
     @Column(value = "change_key")
     private String changeKey;
