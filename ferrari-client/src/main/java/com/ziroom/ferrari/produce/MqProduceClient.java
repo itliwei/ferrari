@@ -38,15 +38,6 @@ public class MqProduceClient {
     @Autowired
     private Executor executorService ;
 
-    public MqProduceClient(){
-        if (mqProduceService == null){
-            this.mqProduceService = new MqProduceServiceImpl();
-        }
-        if (dataChangeMessageService == null){
-            this.dataChangeMessageService = new DataChangeMessageServiceImpl();
-        }
-    }
-
     /**
      * 发送消息
      * @author liwei
@@ -54,6 +45,7 @@ public class MqProduceClient {
      * @param messageData QueueNameEnum
      */
     public BaseResult sendMsg(QueueNameEnum queueNameEnum , MessageData messageData) {
+        log.info("MqProduceClient sendMsg :" +messageData.toString());
         Preconditions.checkNotNull(queueNameEnum,"queueNameEnum 为空");
         Preconditions.checkNotNull(messageData,"messageData 为空");
         BaseResult baseResult;
