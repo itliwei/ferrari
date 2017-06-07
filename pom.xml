@@ -4,69 +4,52 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>1.5.3.RELEASE</version>
-    </parent>
-
     <groupId>com.ziroom.ferrari</groupId>
-    <artifactId>rocketmq-proxy</artifactId>
-    <packaging>pom</packaging>
+    <artifactId>mqProxy</artifactId>
     <version>1.0.0-SNAPSHOT</version>
-    <name>Ferrari:::Root</name>
+    <packaging>pom</packaging>
+    <name>Ferrari</name>
 
-
-    <modules>
-        <module>assembly</module>
-        <module>ferrari-core</module>
-        <module>ferrari-client</module>
-    </modules>
     <properties>
-        <rent-common-version>5.4.0-SNAPSHOT</rent-common-version>
         <file_encoding>UTF-8</file_encoding>
         <!-- Maven插件版本定义 apache-maven-3.3.3版本默认版本插件版本 -->
         <maven_source_plugin_version>2.6</maven_source_plugin_version>
         <maven_compiler_plugin_version>3.1</maven_compiler_plugin_version>
         <maven_jar_plugin_version>2.4</maven_jar_plugin_version>
-        <maven_war_plugin_version>2.2</maven_war_plugin_version>
         <maven_install_plugin_version>2.4</maven_install_plugin_version>
-        <maven_deploy_plugin_version>2.7</maven_deploy_plugin_version>
-        <maven-surefire-plugin_version>2.12.4</maven-surefire-plugin_version>
+        <maven_deploy_plugin_version>2.6</maven_deploy_plugin_version>
+        <maven-source-plugin.version>2.3</maven-source-plugin.version>
+        <maven-javadoc-plugin.version>2.9.1</maven-javadoc-plugin.version>
     </properties>
+
     <dependencies>
+        <!-- common-utils -->
         <dependency>
             <groupId>com.ziroom</groupId>
             <artifactId>rent-common</artifactId>
-            <version>${rent-common.version}</version>
+            <version>5.4.0-SNAPSHOT</version>
             <exclusions>
                 <exclusion>
-                    <groupId>com.ziroom.platform.tesla</groupId>
-                    <artifactId>tesla-config</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.ziroom.platform.tesla</groupId>
-                    <artifactId>tesla-config-spring</artifactId>
+                    <artifactId>httpmime</artifactId>
+                    <groupId>org.apache.httpcomponents</groupId>
                 </exclusion>
             </exclusions>
         </dependency>
+        <!-- rabbitMq -->
+        <dependency>
+            <groupId>com.ziroom.gaea</groupId>
+            <artifactId>gaea-mq-rabbitmq</artifactId>
+            <version>2.0.2-RELEASE</version>
+        </dependency>
+        <!-- end of mq -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.16.4</version>
+        </dependency>
     </dependencies>
+
     <build>
-    <resources>
-        <resource>
-            <directory>src/main/java</directory>
-            <includes>
-                <include>**/*.xml</include>
-            </includes>
-        </resource>
-        <resource>
-            <directory>src/main/resources</directory>
-            <includes>
-                <include>**/*.*</include>
-            </includes>
-        </resource>
-    </resources>
-    <pluginManagement>
         <plugins>
             <!-- compiler插件, 设定JDK版本 -->
             <plugin>
@@ -77,20 +60,6 @@
                     <source>1.8</source>
                     <target>1.8</target>
                     <encoding>${file_encoding}</encoding>
-                </configuration>
-            </plugin>
-            <!-- test插件 -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>${maven-surefire-plugin_version}</version>
-                <configuration>
-                    <!--<skip>true</skip> -->
-                    <skip>true</skip>
-                    <failIfNoTests>false</failIfNoTests>
-                    <includes>
-                        <include>**/*Test.java</include>
-                    </includes>
                 </configuration>
             </plugin>
             <!-- resource插件, 设定编码 -->
@@ -114,21 +83,33 @@
                 <artifactId>maven-deploy-plugin</artifactId>
                 <version>${maven_deploy_plugin_version}</version>
             </plugin>
-            <!-- war插件 -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-war-plugin</artifactId>
-                <version>${maven_war_plugin_version}</version>
-            </plugin>
             <!-- jar插件 -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>${maven_jar_plugin_version}</version>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>${maven-source-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar-no-fork</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>${maven-javadoc-plugin.version}</version>
+            </plugin>
         </plugins>
-    </pluginManagement>
     </build>
+
     <distributionManagement>
         <repository>
             <id>ziroom</id>
@@ -139,11 +120,4 @@
             <url>http://mvn.ziroom.com/ams-snapshot</url>
         </snapshotRepository>
     </distributionManagement>
-    <repositories>
-        <repository>
-            <id>artifactory</id>
-            <url>http://mvn.ziroom.com/public</url>
-        </repository>
-    </repositories>
-
 </project>
