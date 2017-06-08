@@ -5,11 +5,10 @@ import com.ziroom.ferrari.executor.DataChangeMessageExecutor;
 import com.ziroom.ferrari.executor.DataChangeMessageSendExecutor;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
+ *放入自定义队列任务
  * Created by homelink on 2017/6/8 0008.
  */
 @Slf4j

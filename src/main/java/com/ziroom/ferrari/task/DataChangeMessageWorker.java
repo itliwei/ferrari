@@ -11,6 +11,7 @@ import java.util.Date;
 import java.util.concurrent.CountDownLatch;
 
 /**
+ * 执行任务的worker
  * Created by homelink on 2017/6/7 0007.
  */
 @Slf4j

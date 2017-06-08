@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.concurrent.*;
 
 /**
+ * 发送任务线程池
  * Created by homelink on 2017/6/8 0008.
  */
 @Slf4j

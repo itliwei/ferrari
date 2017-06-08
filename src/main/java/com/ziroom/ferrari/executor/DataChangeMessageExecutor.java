@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.concurrent.*;
 
 /**
+ * 放入队列线程池
  * Created by homelink on 2017/6/8 0008.
  */
 @Slf4j
@@ -30,7 +31,7 @@ public class DataChangeMessageExecutor {
         threadPoolExecutor = new ThreadPoolExecutor(1, 1,
                 0L, TimeUnit.MILLISECONDS,
                 messageDataQueue);
-        //初始化另一个线程池
+        //初始化另一个发送任务线程池
         dataChangeMessageSendExecutor = new DataChangeMessageSendExecutor();
     }
 

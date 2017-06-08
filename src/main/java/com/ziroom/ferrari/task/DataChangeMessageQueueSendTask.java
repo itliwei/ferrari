@@ -6,6 +6,7 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 /**
+ * 发送任务任务
  * Created by homelink on 2017/6/8 0008.
  */
 @Slf4j
