@@ -10,8 +10,8 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 /**
- * 定时任务，未发送和发送失败的
- * @Date 2017/5/2
+ * 定时任务JOB，未发送和发送失败
+ * @Date 2017/6/8
  */
 @Component
 public class DataChangeMessageJob {
