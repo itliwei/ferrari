@@ -26,6 +26,9 @@ public class DataChangeMessageSendExecutor {
 
     public DataChangeMessageSendExecutor() {
         this(4);
+        DataChangeMessageQueueSendTask dataChangeMessageQueueTask = new DataChangeMessageQueueSendTask(this);
+        Thread thread = new Thread(dataChangeMessageQueueTask);
+        thread.start();
     }
 
     public DataChangeMessageSendExecutor(int threadPoolCount) {
@@ -36,6 +39,7 @@ public class DataChangeMessageSendExecutor {
                     new LinkedBlockingQueue());
             executorMap.put(i, threadPoolExecutor);
         }
+
         //统计线程池
         scheduledExecutorService.scheduleAtFixedRate(new Runnable() {
             @Override
@@ -78,9 +82,6 @@ public class DataChangeMessageSendExecutor {
 
     public static void main(String[] args) throws InterruptedException {
         DataChangeMessageSendExecutor dataChangeMessageSendExecutor = new DataChangeMessageSendExecutor();
-        DataChangeMessageQueueSendTask dataChangeMessageQueueTask = new DataChangeMessageQueueSendTask(dataChangeMessageSendExecutor);
-        Thread thread = new Thread(dataChangeMessageQueueTask);
-        thread.start();
         //线程池发送MQ
         for(int i=1;i<100;i++) {
             int r = (int)Math.random()*100;

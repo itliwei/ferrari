@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 /**
+ * 定时任务，未发送和发送失败的
  * @Date 2017/5/2
  */
 @Component
@@ -18,14 +19,14 @@ public class DataChangeMessageJob {
     private DataChangeMessageSendExecutor dataChangeMessageSendExecutor;
     @Autowired
     private DataChangeMessageExecutor dataChangeMessageExecutor;
-    //数据队列
+    //方案一 数据队列
     protected void processSendMsgsJob(List<DataChangeMessageEntity> dataChangeMessageEntities) throws Exception {
         Preconditions.checkNotNull(dataChangeMessageEntities,"dataChangeMessageEntities is null");
         for (DataChangeMessageEntity dataChangeMessageEntity : dataChangeMessageEntities){
             dataChangeMessageSendExecutor.getDataChangeMessageQueue().put(dataChangeMessageEntity);
         }
     }
-    //任务队列
+    //方案二 任务队列
     protected void processSendMsgsJob2(List<DataChangeMessageEntity> dataChangeMessageEntities) throws Exception {
         Preconditions.checkNotNull(dataChangeMessageEntities,"dataChangeMessageEntities is null");
         for (DataChangeMessageEntity dataChangeMessageEntity : dataChangeMessageEntities){
