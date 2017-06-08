@@ -17,6 +17,8 @@ public class DataChangeMessageSendExecutor {
     private Map<Integer, ThreadPoolExecutor> executorMap = Maps.newHashMap();
     private final ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
 
+    private DataChangeMessageQueue dataChangeMessageQueue = new DataChangeMessageQueue();
+
     public DataChangeMessageSendExecutor() {
         this(4);
     }
@@ -38,10 +40,13 @@ public class DataChangeMessageSendExecutor {
         }, 0L, 2L, TimeUnit.MINUTES);
     }
 
-    public void execute(String jobName, DataChangeMessageEntity dataChangeMessageEntity) {
-        int shardingItem = new Long(dataChangeMessageEntity.getChangeKey()).intValue() % threadPoolCount;
-        ExecutorService executorService = executorMap.get(shardingItem);
-        executorService.execute(new DataChangeMessageWorker(jobName, dataChangeMessageEntity));
+    public void execute(String jobName, DataChangeMessageEntity dataChangeMessageEntity) throws InterruptedException {
+        while (true){
+            DataChangeMessageEntity take = dataChangeMessageQueue.take();
+            int shardingItem = new Long(take.getChangeKey()).intValue() % threadPoolCount;
+            ExecutorService executorService = executorMap.get(shardingItem);
+            executorService.execute(new DataChangeMessageWorker(jobName+shardingItem, dataChangeMessageEntity));
+        }
     }
 
     private void taskBacklogStatistics() {
