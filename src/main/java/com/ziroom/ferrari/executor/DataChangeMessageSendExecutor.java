@@ -61,14 +61,14 @@ public class DataChangeMessageSendExecutor {
     }
 
     public void execute(MessageDataQueue messageDataQueue) throws InterruptedException {
-//        while (!messageDataQueue.isEmpty()) {
+        while (!messageDataQueue.isEmpty()) {
             DataChangeMessageQueueTask take = messageDataQueue.take();
             DataChangeMessageEntity dataChangeMessageEntity = take.getDataChangeMessageEntity();
             int shardingItem = new Long(dataChangeMessageEntity.getChangeKey()).intValue() % threadPoolCount;
             ExecutorService executorService = executorMap.get(shardingItem);
             executorService.execute(new DataChangeMessageWorker("" + shardingItem, dataChangeMessageEntity));
             log.info("changeKey : " + dataChangeMessageEntity.getChangeKey() + "shardingItem：" + shardingItem + "当前积压数：" + dataChangeMessageQueue.size());
-//        }
+        }
     }
 
     private void taskBacklogStatistics() {
