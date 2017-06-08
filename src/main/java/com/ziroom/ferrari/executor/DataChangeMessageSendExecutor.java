@@ -50,7 +50,7 @@ public class DataChangeMessageSendExecutor {
     }
 
     public void execute() throws InterruptedException {
-        while (true){
+        while (!dataChangeMessageQueue.isEmpty()){
             DataChangeMessageEntity take = dataChangeMessageQueue.take();
             int shardingItem = new Long(take.getChangeKey()).intValue() % threadPoolCount;
             ExecutorService executorService = executorMap.get(shardingItem);
