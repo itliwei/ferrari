@@ -26,6 +26,7 @@ public class DataChangeMessageSendExecutor {
 
     public DataChangeMessageSendExecutor() {
         this(4);
+        //启动监控任务线程
         DataChangeMessageQueueSendTask dataChangeMessageQueueTask = new DataChangeMessageQueueSendTask(this);
         Thread thread = new Thread(dataChangeMessageQueueTask);
         thread.start();
