@@ -14,47 +14,19 @@ import java.util.concurrent.*;
  */
 @Slf4j
 public class DataChangeMessageExecutor {
-    private int threadPoolCount;
-    private Map<Integer, ThreadPoolExecutor> executorMap = Maps.newHashMap();
-    private final ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
-
+    public ThreadPoolExecutor dataChangeMessageExecutor;
+    /**
+     * 1.在使用有界队列的时候：若有新的任务需要执行，如果线程池实际线程数小于corePoolSize核心线程数的时候，则优先创建线程。
+     * 若大于corePoolSize时，则会将多余的线程存放在队列中，
+     * 若队列已满，且最请求线程小于maximumPoolSize的情况下，则自定义的线程池会创建新的线程，
+     * 若队列已满，且最请求线程大于maximumPoolSize的情况下，则执行拒绝策略，或其他自定义方式。
+     * ArrayBlockingQueue(有界队列)
+     * LinkedBlockingQueue(无界队列)
+     */
     public DataChangeMessageExecutor() {
-        this(4);
+        dataChangeMessageExecutor = new ThreadPoolExecutor(1, 1,
+                0L, TimeUnit.MILLISECONDS,
+                new MessageDataQueue());
     }
-
-    public DataChangeMessageExecutor(int threadPoolCount) {
-        this.threadPoolCount = threadPoolCount;
-        for (int i = 0; i < threadPoolCount; i++) {
-            ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(1, 1,
-                    0L, TimeUnit.MILLISECONDS,
-                    new MessageDataQueue());
-            executorMap.put(i, threadPoolExecutor);
-        }
-
-        //统计线程池
-        scheduledExecutorService.scheduleAtFixedRate(new Runnable() {
-            @Override
-            public void run() {
-                taskBacklogStatistics();
-            }
-        }, 0L, 2L, TimeUnit.MINUTES);
-    }
-
-    public void execute(CountDownLatch countDownLatch, String jobName, DataChangeMessageEntity dataChangeMessageEntity) {
-        int shardingItem = new Long(dataChangeMessageEntity.getChangeKey()).intValue() % threadPoolCount;
-        ExecutorService executorService = executorMap.get(shardingItem);
-        executorService.execute(new DataChangeMessageWorker(countDownLatch, jobName, dataChangeMessageEntity));
-    }
-
-    private void taskBacklogStatistics() {
-        Iterator<Map.Entry<Integer, ThreadPoolExecutor>> iterator = executorMap.entrySet().iterator();
-        while (iterator.hasNext()) {
-            Map.Entry<Integer, ThreadPoolExecutor> entry = iterator.next();
-            Integer key = entry.getKey();
-            ThreadPoolExecutor threadPoolExecutor = entry.getValue();
-            log.info("SolrRoomIncrWorkExecuter线程池：" + key + "当前积压数：" + threadPoolExecutor.getQueue().size());
-        }
-    }
-
 
 }

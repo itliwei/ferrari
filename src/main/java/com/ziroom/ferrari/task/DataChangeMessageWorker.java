@@ -17,7 +17,6 @@ import java.util.concurrent.CountDownLatch;
 public class DataChangeMessageWorker implements Runnable{
     private CountDownLatch countDownLatch;
     private String workerName;
-    private QueueNameEnum queueNameEnum;
     private DataChangeMessageEntity dataChangeMessageEntity;
 
     public DataChangeMessageWorker(CountDownLatch countDownLatch, String workerName, DataChangeMessageEntity dataChangeMessageEntity) {
@@ -28,7 +27,8 @@ public class DataChangeMessageWorker implements Runnable{
 
     @Override
     public void run() {
-        log.info("SendToMqTask :{} ,ThreadId:{} run：{}",queueNameEnum.getFunction(),Thread.currentThread().getName(),queueNameEnum.getModule(),dataChangeMessageEntity.toString());
+        log.info("SendToMqTask :{} ,ThreadId:{} run：{}",dataChangeMessageEntity.getMsgFunction(),
+                workerName, dataChangeMessageEntity.getMsgModule(),dataChangeMessageEntity.toString());
         try {
             //发送时间
             dataChangeMessageEntity.setProduceTime(DateUtils.format2Long(new Date()));
