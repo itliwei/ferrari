@@ -13,12 +13,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 @Getter
 @Setter
 public class DataChangeMessageQueueTask implements Runnable,Comparable<DataChangeMessageQueueTask> {
-    @Autowired
     private MessageDataQueue messageDataQueue;
 
     private DataChangeMessageEntity dataChangeMessageEntity;
 
-    public DataChangeMessageQueueTask(DataChangeMessageEntity dataChangeMessageEntity){
+    public DataChangeMessageQueueTask(MessageDataQueue messageDataQueue,DataChangeMessageEntity dataChangeMessageEntity){
+        this.messageDataQueue = messageDataQueue;
         this.dataChangeMessageEntity = dataChangeMessageEntity;
     }
     @Override

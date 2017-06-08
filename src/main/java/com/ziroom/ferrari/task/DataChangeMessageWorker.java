@@ -15,12 +15,10 @@ import java.util.concurrent.CountDownLatch;
  */
 @Slf4j
 public class DataChangeMessageWorker implements Runnable{
-    private CountDownLatch countDownLatch;
     private String workerName;
     private DataChangeMessageEntity dataChangeMessageEntity;
 
-    public DataChangeMessageWorker(CountDownLatch countDownLatch, String workerName, DataChangeMessageEntity dataChangeMessageEntity) {
-        this.countDownLatch = countDownLatch;
+    public DataChangeMessageWorker( String workerName, DataChangeMessageEntity dataChangeMessageEntity) {
         this.workerName = workerName;
         this.dataChangeMessageEntity = dataChangeMessageEntity;
     }
@@ -39,6 +37,5 @@ public class DataChangeMessageWorker implements Runnable{
             dataChangeMessageEntity.setMsgStatus(MsgStatusEnum.MSG_SEND_FAILURE.getCode());
             //更改数据库状态
         }
-        countDownLatch.countDown();
     }
 }

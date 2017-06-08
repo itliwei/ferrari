@@ -1,6 +1,7 @@
 package com.ziroom.ferrari.task;
 
 import com.ziroom.ferrari.exception.DataChangeMessageSendException;
+import org.springframework.context.annotation.Bean;
 
 import java.util.HashSet;
 import java.util.concurrent.PriorityBlockingQueue;

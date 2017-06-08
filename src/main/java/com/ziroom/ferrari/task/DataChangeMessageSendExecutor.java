@@ -38,10 +38,10 @@ public class DataChangeMessageSendExecutor {
         }, 0L, 2L, TimeUnit.MINUTES);
     }
 
-    public void execute(CountDownLatch countDownLatch, String jobName, DataChangeMessageEntity dataChangeMessageEntity) {
+    public void execute(String jobName, DataChangeMessageEntity dataChangeMessageEntity) {
         int shardingItem = new Long(dataChangeMessageEntity.getChangeKey()).intValue() % threadPoolCount;
         ExecutorService executorService = executorMap.get(shardingItem);
-        executorService.execute(new DataChangeMessageWorker(countDownLatch, jobName, dataChangeMessageEntity));
+        executorService.execute(new DataChangeMessageWorker(jobName, dataChangeMessageEntity));
     }
 
     private void taskBacklogStatistics() {
