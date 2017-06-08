@@ -13,9 +13,7 @@ import org.springframework.context.annotation.Configuration;
 /**
  * dataChangeMessageProducer 注入bean
  *
- * @author dongl50@ziroom.com
  * @version 1.0
- * @date 25/2/2017 2:35 PM
  * @since 1.0
  */
 @Slf4j
