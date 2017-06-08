@@ -34,7 +34,7 @@ public class DataChangeMessageSendExecutor {
         for (int i = 0; i < threadPoolCount; i++) {
             ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(1, 1,
                     0L, TimeUnit.MILLISECONDS,
-                    new MessageDataQueue());
+                    new MessageWorkerQueue());
             executorMap.put(i, threadPoolExecutor);
         }
 

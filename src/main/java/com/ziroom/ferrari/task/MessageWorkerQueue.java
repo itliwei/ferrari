@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit;
  * MessageDataQueue
  * Created by liwei on 2017/6/7 0007.
  */
-public class MessageDataQueue extends PriorityBlockingQueue<Runnable> {
+public class MessageWorkerQueue extends PriorityBlockingQueue<Runnable> {
 
     private transient HashSet<String> keySet = new HashSet<>();
     /**
