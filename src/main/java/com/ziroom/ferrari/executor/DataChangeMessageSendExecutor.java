@@ -3,6 +3,7 @@ package com.ziroom.ferrari.executor;
 import com.google.common.collect.Maps;
 import com.ziroom.ferrari.domain.DataChangeMessageEntity;
 import com.ziroom.ferrari.task.*;
+import com.ziroom.ferrari.vo.DataChangeMessage;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -23,14 +24,9 @@ public class DataChangeMessageSendExecutor {
     private Map<Integer, ThreadPoolExecutor> executorMap = Maps.newHashMap();
     private final ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
 
-    private DataChangeMessageQueue dataChangeMessageQueue = new DataChangeMessageQueue();
 
     public DataChangeMessageSendExecutor() {
         this(4);
-        //启动监控任务线程
-        DataChangeMessageQueueSendTask dataChangeMessageQueueTask = new DataChangeMessageQueueSendTask(this);
-        Thread thread = new Thread(dataChangeMessageQueueTask);
-        thread.start();
     }
 
     public DataChangeMessageSendExecutor(int threadPoolCount) {
@@ -38,7 +34,7 @@ public class DataChangeMessageSendExecutor {
         for (int i = 0; i < threadPoolCount; i++) {
             ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(1, 1,
                     0L, TimeUnit.MILLISECONDS,
-                    new LinkedBlockingQueue());
+                    new MessageDataQueue());
             executorMap.put(i, threadPoolExecutor);
         }
 
@@ -51,25 +47,11 @@ public class DataChangeMessageSendExecutor {
         }, 0L, 2L, TimeUnit.MINUTES);
     }
 
-    public void execute() throws InterruptedException {
-        while (!dataChangeMessageQueue.isEmpty()){
-            DataChangeMessageEntity take = dataChangeMessageQueue.take();
-            int shardingItem = new Long(take.getChangeKey()).intValue() % threadPoolCount;
-            ExecutorService executorService = executorMap.get(shardingItem);
-            executorService.execute(new DataChangeMessageWorker(""+shardingItem, take));
-            log.info("changeKey : "+take.getChangeKey()+"shardingItem：" + shardingItem + "当前积压数：" + dataChangeMessageQueue.size());
-        }
-    }
-
-    public void execute(MessageDataQueue messageDataQueue) throws InterruptedException {
-        while (!messageDataQueue.isEmpty()) {
-            DataChangeMessageQueueTask take = messageDataQueue.take();
-            DataChangeMessageEntity dataChangeMessageEntity = take.getDataChangeMessageEntity();
+    public void execute(DataChangeMessageEntity dataChangeMessageEntity) {
             int shardingItem = new Long(dataChangeMessageEntity.getChangeKey()).intValue() % threadPoolCount;
             ExecutorService executorService = executorMap.get(shardingItem);
-            executorService.execute(new DataChangeMessageWorker("" + shardingItem, dataChangeMessageEntity));
-            log.info("changeKey : " + dataChangeMessageEntity.getChangeKey() + "shardingItem：" + shardingItem + "当前积压数：" + dataChangeMessageQueue.size());
-        }
+            executorService.execute(new DataChangeMessageWorker(dataChangeMessageEntity));
+            log.info("changeKey : " + dataChangeMessageEntity.getChangeKey() + "shardingItem：" +shardingItem);
     }
 
     private void taskBacklogStatistics() {
@@ -91,7 +73,6 @@ public class DataChangeMessageSendExecutor {
             entity.setMsgFunction("AMS");
             entity.setMsgId(""+i);
             entity.setChangeKey(""+i);
-            dataChangeMessageSendExecutor.dataChangeMessageQueue.put(entity);
         }
 
     }

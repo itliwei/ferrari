@@ -15,12 +15,12 @@ public class MessageDataQueue extends PriorityBlockingQueue<Runnable> {
     private transient HashSet<String> keySet = new HashSet<>();
     /**
      * 放置元素
-     * @param dataChangeMessageQueueTask
+     * @param dataChangeMessageWorker
      * @throws DataChangeMessageSendException
      */
-    public synchronized void put(DataChangeMessageQueueTask dataChangeMessageQueueTask) throws DataChangeMessageSendException {
-        if(this.keySet.add(dataChangeMessageQueueTask.getDataChangeMessageEntity().getMsgId())) {
-            super.put(dataChangeMessageQueueTask);
+    public synchronized void put(DataChangeMessageWorker dataChangeMessageWorker) throws DataChangeMessageSendException {
+        if(this.keySet.add(dataChangeMessageWorker.getDataChangeMessageEntity().getMsgId())) {
+            super.put(dataChangeMessageWorker);
         }
     }
     /**
@@ -28,16 +28,16 @@ public class MessageDataQueue extends PriorityBlockingQueue<Runnable> {
      * @return
      * @throws InterruptedException
      */
-    public DataChangeMessageQueueTask take() throws InterruptedException {
-        DataChangeMessageQueueTask dataChangeMessageQueueTask = (DataChangeMessageQueueTask)super.take();
+    public DataChangeMessageWorker take() throws InterruptedException {
+        DataChangeMessageWorker dataChangeMessageQueueTask = (DataChangeMessageWorker)super.take();
         if(dataChangeMessageQueueTask != null) {
             this.keySet.remove(dataChangeMessageQueueTask.getDataChangeMessageEntity().getMsgId());
         }
         return dataChangeMessageQueueTask;
     }
 
-    public DataChangeMessageQueueTask poll(long timeout, TimeUnit unit) throws InterruptedException {
-        DataChangeMessageQueueTask dataChangeMessageQueueTask = (DataChangeMessageQueueTask)super.poll(timeout, unit);
+    public DataChangeMessageWorker poll(long timeout, TimeUnit unit) throws InterruptedException {
+        DataChangeMessageWorker dataChangeMessageQueueTask = (DataChangeMessageWorker)super.poll(timeout, unit);
         if(dataChangeMessageQueueTask != null) {
             this.keySet.remove(dataChangeMessageQueueTask.getDataChangeMessageEntity().getMsgId());
         }

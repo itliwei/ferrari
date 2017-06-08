@@ -1,5 +1,6 @@
 package com.ziroom.ferrari.domain;
 
+import com.alibaba.fastjson.JSON;
 import com.ziroom.rent.common.orm.entity.IdEntity;
 import lombok.Getter;
 import lombok.Setter;
@@ -37,6 +38,10 @@ public class DataChangeMessageEntity extends IdEntity implements Comparable<Data
     private String changeData;
     //消息消费时间
     private long consumeTime;
+
+    public String toJsonStr() {
+        return JSON.toJSONString(this);
+    }
 
     @Override
     public int compareTo(DataChangeMessageEntity o) {
