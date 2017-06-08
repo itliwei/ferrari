@@ -4,7 +4,6 @@ import com.ziroom.ferrari.domain.DataChangeMessageEntity;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Created by homelink on 2017/6/8 0008.

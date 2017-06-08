@@ -13,16 +13,13 @@ import java.util.List;
 @Component
 public class DataChangeMessageJob {
     @Autowired
-    private DataChangeMessageExecutor dataChangeMessageExecutor;
+    private DataChangeMessageSendExecutor dataChangeMessageSendExecutor;
 
     protected void processSendMsgsJob(List<DataChangeMessageEntity> dataChangeMessageEntities) throws Exception {
         Preconditions.checkNotNull(dataChangeMessageEntities,"dataChangeMessageEntities is null");
 
         for (DataChangeMessageEntity dataChangeMessageEntity : dataChangeMessageEntities){
-            DataChangeMessageQueueTask dataChangeMessageQueueTask=new DataChangeMessageQueueTask(
-                    dataChangeMessageExecutor.getMessageDataQueue(),
-                    dataChangeMessageEntity);
-            dataChangeMessageQueueTask.run();
+            dataChangeMessageSendExecutor.getDataChangeMessageQueue().put(dataChangeMessageEntity);
         }
     }
 }
