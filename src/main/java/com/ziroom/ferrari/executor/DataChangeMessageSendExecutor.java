@@ -1,13 +1,14 @@
-package com.ziroom.ferrari.task;
+package com.ziroom.ferrari.executor;
 
 import com.google.common.collect.Maps;
 import com.ziroom.ferrari.domain.DataChangeMessageEntity;
+import com.ziroom.ferrari.task.*;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Random;
 import java.util.concurrent.*;
 
 /**
@@ -15,6 +16,7 @@ import java.util.concurrent.*;
  */
 @Slf4j
 @Getter
+@Component
 public class DataChangeMessageSendExecutor {
     private int threadPoolCount;
     private Map<Integer, ThreadPoolExecutor> executorMap = Maps.newHashMap();
@@ -53,13 +55,24 @@ public class DataChangeMessageSendExecutor {
         }
     }
 
+    public void execute(MessageDataQueue messageDataQueue) throws InterruptedException {
+//        while (!messageDataQueue.isEmpty()) {
+            DataChangeMessageQueueTask take = messageDataQueue.take();
+            DataChangeMessageEntity dataChangeMessageEntity = take.getDataChangeMessageEntity();
+            int shardingItem = new Long(dataChangeMessageEntity.getChangeKey()).intValue() % threadPoolCount;
+            ExecutorService executorService = executorMap.get(shardingItem);
+            executorService.execute(new DataChangeMessageWorker("" + shardingItem, dataChangeMessageEntity));
+            log.info("changeKey : " + dataChangeMessageEntity.getChangeKey() + "shardingItem：" + shardingItem + "当前积压数：" + dataChangeMessageQueue.size());
+//        }
+    }
+
     private void taskBacklogStatistics() {
         Iterator<Map.Entry<Integer, ThreadPoolExecutor>> iterator = executorMap.entrySet().iterator();
         while (iterator.hasNext()) {
             Map.Entry<Integer, ThreadPoolExecutor> entry = iterator.next();
             Integer key = entry.getKey();
             ThreadPoolExecutor threadPoolExecutor = entry.getValue();
-            log.info("SolrRoomIncrWorkExecuter线程池：" + key + "当前积压数：" + threadPoolExecutor.getQueue().size());
+            log.info("DataChangeMessageSendExecutor线程池：" + key + "当前积压数：" + threadPoolExecutor.getQueue().size());
         }
     }
 
@@ -69,12 +82,12 @@ public class DataChangeMessageSendExecutor {
         Thread thread = new Thread(dataChangeMessageQueueTask);
         thread.start();
         //线程池发送MQ
-        while(true) {
-            Random random = new Random(10000);
+        for(int i=1;i<100;i++) {
+            int r = (int)Math.random()*100;
             DataChangeMessageEntity entity = new DataChangeMessageEntity();
             entity.setMsgFunction("AMS");
-            entity.setMsgId(""+random);
-            entity.setChangeKey(""+random);
+            entity.setMsgId(""+i);
+            entity.setChangeKey(""+i);
             dataChangeMessageSendExecutor.dataChangeMessageQueue.put(entity);
         }
 

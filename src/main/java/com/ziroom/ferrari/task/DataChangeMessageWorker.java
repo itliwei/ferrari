@@ -25,8 +25,8 @@ public class DataChangeMessageWorker implements Runnable{
 
     @Override
     public void run() {
-        log.info("SendToMqTask :{} ,ThreadId:{} run：{}",dataChangeMessageEntity.getMsgFunction(),
-                workerName, dataChangeMessageEntity.getMsgModule(),dataChangeMessageEntity.toString());
+        log.info("SendToMqTask :{} ,ThreadId:{} run：{}",dataChangeMessageEntity.getMsgFunction()+dataChangeMessageEntity.getChangeKey(),
+                workerName, dataChangeMessageEntity.getMsgModule(),null);
         try {
             //发送时间
             dataChangeMessageEntity.setProduceTime(DateUtils.format2Long(new Date()));
