@@ -41,13 +41,7 @@ public class DataChangeMessageWorker implements Runnable , Comparable<DataChange
 
     @Override
     public void run() {
-        try {
-            log.info("run -----------------------"+dataChangeMessageEntity.getMsgId());
-            TimeUnit.MILLISECONDS.sleep(500);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        log.info("dataChangeMessage:",dataChangeMessageEntity.toString());
+        log.info("dataChangeMessage send to MQ :",dataChangeMessageEntity.toString());
         try {
             QueueName queueName = new QueueName(dataChangeMessageEntity.getMsgSystem(),dataChangeMessageEntity.getMsgModule(),
                     dataChangeMessageEntity.getMsgFunction());
