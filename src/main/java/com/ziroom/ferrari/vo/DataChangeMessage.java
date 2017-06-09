@@ -1,5 +1,6 @@
 package com.ziroom.ferrari.vo;
 
+import com.alibaba.fastjson.JSON;
 import com.ziroom.ferrari.enums.ChangeTypeEnum;
 import lombok.Getter;
 import lombok.Setter;
@@ -14,6 +15,8 @@ import lombok.ToString;
 @Getter
 @ToString
 public class DataChangeMessage {
+    //消息ID
+    private String msgId;
     //变更数据实体名称
     private String changeEntityName;
     //业务上唯一区分一条数据的主键，如invRoomCode
@@ -24,4 +27,9 @@ public class DataChangeMessage {
     private long changeTime;
     //变更内容 TODO:补充详细说明
     private String changeData;
+
+    public String toJsonStr() {
+        return JSON.toJSONString(this);
+    }
+
 }

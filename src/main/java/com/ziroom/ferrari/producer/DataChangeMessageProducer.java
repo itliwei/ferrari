@@ -44,10 +44,9 @@ public class DataChangeMessageProducer {
         sb.append("DataChangeMessageProducer.sendMsg");
         sb.append("|").append(queueNameEnum).append(",").append(dataChangeMessage);
         try {
-            DataChangeMessageEntity dataChangeMessageEntity = MessageConvert.convertMessageData(dataChangeMessage);
+            DataChangeMessageEntity dataChangeMessageEntity = MessageConvert.convertDataChangeMessage(dataChangeMessage);
             dataChangeMessageEntity.setMsgId(ObjectIdGenerator.nextValue());
-            DataChangeMessageWorker dataChangeMessageWorker = new DataChangeMessageWorker(dataChangeMessageEntity);
-//            dataChangeMessageDao.insert(dataChangeMessageEntity);
+            dataChangeMessageDao.insert(dataChangeMessageEntity);
             dataChangeMessageSendExecutor.execute(dataChangeMessageEntity);
             sb.append("|Success");
         } catch (RuntimeException e) {

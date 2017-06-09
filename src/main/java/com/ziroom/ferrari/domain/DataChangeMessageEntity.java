@@ -38,9 +38,4 @@ public class DataChangeMessageEntity extends IdEntity {
     private String changeData;
     //消息消费时间
     private long consumeTime;
-
-    public String toJsonStr() {
-        return JSON.toJSONString(this);
-    }
-
 }

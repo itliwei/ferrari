@@ -48,21 +48,22 @@ public class DataChangeMessageWorker implements Runnable , Comparable<DataChange
             e.printStackTrace();
         }
         log.info("dataChangeMessage:",dataChangeMessageEntity.toString());
-//        try {
-//            QueueName queueName = new QueueName(dataChangeMessageEntity.getMsgSystem(),dataChangeMessageEntity.getMsgModule(),
-//                    dataChangeMessageEntity.getMsgFunction());
-////            rabbitMqSendClient.sendQueue(queueName,dataChangeMessageEntity.toJsonStr());
-////            dataChangeMessageDao.update(dataChangeMessageEntity);
-//        }catch (GaeaRabbitMQException exp){
-//            log.error("SendToMqTask sendToMq GaeaRabbitMQException :{}" ,exp);
-//            dataChangeMessageEntity.setMsgStatus(MsgStatusEnum.MSG_SEND_FAILURE.getCode());
-////            dataChangeMessageDao.update(dataChangeMessageEntity);
-//            //更改数据库状态
-//        } catch (Exception e) {
-//            log.error("SendToMqTask sendToMq exception :{}" ,e);
-//            dataChangeMessageEntity.setMsgStatus(MsgStatusEnum.MSG_SEND_FAILURE.getCode());
-////            dataChangeMessageDao.update(dataChangeMessageEntity);
-//        }
+        try {
+            QueueName queueName = new QueueName(dataChangeMessageEntity.getMsgSystem(),dataChangeMessageEntity.getMsgModule(),
+                    dataChangeMessageEntity.getMsgFunction());
+            DataChangeMessage dataChangeMessage = MessageConvert.convertDataChangeMessageEntity(dataChangeMessageEntity);
+            rabbitMqSendClient.sendQueue(queueName,dataChangeMessage.toJsonStr());
+            dataChangeMessageDao.update(dataChangeMessageEntity);
+        }catch (GaeaRabbitMQException exp){
+            log.error("SendToMqTask sendToMq GaeaRabbitMQException :{}" ,exp);
+            dataChangeMessageEntity.setMsgStatus(MsgStatusEnum.MSG_SEND_FAILURE.getCode());
+            dataChangeMessageDao.update(dataChangeMessageEntity);
+            //更改数据库状态
+        } catch (Exception e) {
+            log.error("SendToMqTask sendToMq exception :{}" ,e);
+            dataChangeMessageEntity.setMsgStatus(MsgStatusEnum.MSG_SEND_FAILURE.getCode());
+            dataChangeMessageDao.update(dataChangeMessageEntity);
+        }
     }
 
     @Override
