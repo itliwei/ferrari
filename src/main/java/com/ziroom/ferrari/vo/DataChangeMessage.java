@@ -7,6 +7,7 @@ import lombok.ToString;
 
 /**
  * 数据变更消息
+ * 实际往MQ发送的消息
  * @Author zhoutao
  * @Date 2017/6/7
  */

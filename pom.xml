@@ -47,18 +47,6 @@
             <artifactId>lombok</artifactId>
             <version>1.16.4</version>
         </dependency>
-        <!-- msyql驱动 -->
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>5.1.38</version>
-        </dependency>
-        <!-- oracle驱动 -->
-        <dependency>
-            <groupId>ojdbc</groupId>
-            <artifactId>ojdbc</artifactId>
-            <version>14</version>
-        </dependency>
         <!-- 通用业务补偿 -->
         <dependency>
             <groupId>com.ziroom</groupId>
@@ -70,12 +58,6 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>1.16.4</version>
-        </dependency>
-        <!-- 调用链条跟踪 -->
-        <dependency>
-            <groupId>com.ziroom</groupId>
-            <artifactId>z-track</artifactId>
-            <version>1.1.1-RELEASE</version>
         </dependency>
     </dependencies>
 
