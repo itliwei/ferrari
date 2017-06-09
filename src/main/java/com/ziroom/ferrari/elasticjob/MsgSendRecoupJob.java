@@ -107,7 +107,6 @@ public class MsgSendRecoupJob extends AbstractSimpleElasticJob {
      * 分片后本节点处理单个待发送消息
      */
     private void processMyShardData(DataChangeMessageEntity myShardData) {
-        //TODO:entity 转换成 实际的消息
         dataChangeMessageSendExecutor.execute(myShardData);
     }
 }
