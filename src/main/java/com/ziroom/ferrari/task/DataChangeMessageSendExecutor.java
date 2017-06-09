@@ -21,7 +21,7 @@ public class DataChangeMessageSendExecutor {
     private int threadPoolCount;
     private Map<Integer, ThreadPoolExecutor> executorMap = Maps.newHashMap();
     private final ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
-
+    private static  final  String JOB_NAME="MessageSendExecutor Thread：";
 
     public DataChangeMessageSendExecutor() {
         this(1);
@@ -32,14 +32,7 @@ public class DataChangeMessageSendExecutor {
         for (int i = 0; i < threadPoolCount; i++) {
             ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(1, 1,
                     0L, TimeUnit.MILLISECONDS,
-                    new MessageWorkerQueue(),
-                    Executors.defaultThreadFactory(),
-                    new RejectedExecutionHandler() {
-                        @Override
-                        public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
-
-                        }
-                    });
+                    new MessageWorkerQueue());//拒绝策略
             executorMap.put(i, threadPoolExecutor);
         }
 
@@ -56,8 +49,12 @@ public class DataChangeMessageSendExecutor {
         log.info("DataChangeMessageSendExecutor execute :"+dataChangeMessageEntity.toString());
         int shardingItem = new Long(dataChangeMessageEntity.getChangeKey()).intValue() % threadPoolCount;
         ThreadPoolExecutor executorService = executorMap.get(shardingItem);
-
-        executorService.execute(new DataChangeMessageWorker(dataChangeMessageEntity));
+        /* jobName */
+        String sbName = JOB_NAME + dataChangeMessageEntity.getMsgSystem() + "_" +
+                dataChangeMessageEntity.getMsgModule() + "_" +
+                dataChangeMessageEntity.getMsgFunction() + "_" +
+                shardingItem;
+        executorService.execute(new DataChangeMessageWorker(sbName,dataChangeMessageEntity));
         log.info("changeKey : " + dataChangeMessageEntity.getChangeKey() + "shardingItem：" +shardingItem+"当前积压："
                     +executorService.getQueue().size());
     }

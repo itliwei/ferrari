@@ -13,7 +13,7 @@ import java.util.concurrent.TimeUnit;
  */
 @Slf4j
 public class MessageWorkerQueue extends PriorityBlockingQueue<Runnable> {
-    private static final int DEFAULT_INITIAL_CAPACITY = 20;
+    private static final int DEFAULT_INITIAL_CAPACITY = 5;
 
     private transient HashSet<String> keySet = new HashSet<>();
 

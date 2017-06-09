@@ -27,15 +27,17 @@ public class DataChangeMessageWorker implements Runnable , Comparable<DataChange
     @Autowired
     private DataChangeMessageSendExecutor dataChangeMessageSendExecutor;
 
+    private String jobName;
     private DataChangeMessageEntity dataChangeMessageEntity;
 
-    public DataChangeMessageWorker( DataChangeMessageEntity dataChangeMessageEntity) {
+    public DataChangeMessageWorker( String jobName,DataChangeMessageEntity dataChangeMessageEntity) {
+        this.jobName = jobName;
         this.dataChangeMessageEntity = dataChangeMessageEntity;
     }
 
     @Override
     public void run() {
-        log.info("dataChangeMessage send to MQ :",dataChangeMessageEntity.toString());
+        log.info("jobName:{},dataChangeMessage send to MQ :{}",dataChangeMessageEntity.toString());
         try {
             QueueName queueName = new QueueName(dataChangeMessageEntity.getMsgSystem(),dataChangeMessageEntity.getMsgModule(),
                     dataChangeMessageEntity.getMsgFunction());

@@ -27,7 +27,7 @@ public class DataChangeMessageProducer {
     @Autowired
     private DataChangeMessageSendExecutor dataChangeMessageSendExecutor = new DataChangeMessageSendExecutor();
     @Autowired
-    private DataChangeMessageDao dataChangeMessageDao;
+    private DataChangeMessageDao dataChangeMessageDao = new DataChangeMessageDao();
 
     /**
      * 不真正发送消息到MQ
