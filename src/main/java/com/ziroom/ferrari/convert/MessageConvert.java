@@ -14,7 +14,7 @@ import java.util.Date;
  */
 public class MessageConvert {
     /**
-     * 将messageData 转换成 DataChangeMessageEntity
+     * dataChangeMessage 转换成 DataChangeMessageEntity
      *
      * @param dataChangeMessage MessageData
      * @return DataChangeMessage
@@ -45,6 +45,7 @@ public class MessageConvert {
             return null;
         }
         DataChangeMessage dataChangeMessage = new DataChangeMessage();
+        dataChangeMessage.setMsgId(dataChangeMessageEntity.getMsgId());
         dataChangeMessage.setChangeTime(dataChangeMessageEntity.getChangeTime());
         dataChangeMessage.setChangeData(dataChangeMessageEntity.getChangeData());
         dataChangeMessage.setChangeEntityName(dataChangeMessageEntity.getChangeEntityName());

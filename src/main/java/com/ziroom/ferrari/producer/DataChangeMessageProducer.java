@@ -1,5 +1,6 @@
 package com.ziroom.ferrari.producer;
 
+import com.google.common.base.Preconditions;
 import com.ziroom.ferrari.convert.MessageConvert;
 import com.ziroom.ferrari.domain.DataChangeMessageDao;
 import com.ziroom.ferrari.domain.DataChangeMessageEntity;
@@ -38,12 +39,15 @@ public class DataChangeMessageProducer {
      * @author liwei
      */
     public void sendMsg(QueueNameEnum queueNameEnum, DataChangeMessage dataChangeMessage) {
+        Preconditions.checkNotNull(queueNameEnum,"queueNameEnum 不能为空");
+        Preconditions.checkNotNull(dataChangeMessage,"dataChangeMessage 不能为空");
         long start = System.currentTimeMillis();
         StringBuilder sb = new StringBuilder();
         sb.append("DataChangeMessageProducer.sendMsg");
         sb.append("|").append(queueNameEnum).append(",").append(dataChangeMessage);
         try {
             DataChangeMessageEntity dataChangeMessageEntity = MessageConvert.convertDataChangeMessage(dataChangeMessage);
+            //生产msgId
             dataChangeMessageEntity.setMsgId(ObjectIdGenerator.nextValue());
             dataChangeMessageDao.insert(dataChangeMessageEntity);
             dataChangeMessageSendExecutor.execute(dataChangeMessageEntity);
