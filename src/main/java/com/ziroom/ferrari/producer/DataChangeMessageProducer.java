@@ -1,13 +1,13 @@
 package com.ziroom.ferrari.producer;
 
+import com.google.common.base.Preconditions;
 import com.ziroom.ferrari.convert.MessageConvert;
 import com.ziroom.ferrari.domain.DataChangeMessageDao;
 import com.ziroom.ferrari.domain.DataChangeMessageEntity;
 import com.ziroom.ferrari.enums.ChangeTypeEnum;
 import com.ziroom.ferrari.enums.QueueNameEnum;
 import com.ziroom.ferrari.exception.DataChangeMessageSendException;
-import com.ziroom.ferrari.executor.DataChangeMessageSendExecutor;
-import com.ziroom.ferrari.task.DataChangeMessageWorker;
+import com.ziroom.ferrari.task.DataChangeMessageSendExecutor;
 import com.ziroom.ferrari.vo.DataChangeMessage;
 import com.ziroom.rent.common.idgenerator.ObjectIdGenerator;
 import com.ziroom.rent.common.util.DateUtils;
@@ -27,7 +27,7 @@ public class DataChangeMessageProducer {
     @Autowired
     private DataChangeMessageSendExecutor dataChangeMessageSendExecutor = new DataChangeMessageSendExecutor();
     @Autowired
-    private DataChangeMessageDao dataChangeMessageDao;
+    private DataChangeMessageDao dataChangeMessageDao = new DataChangeMessageDao();
 
     /**
      * 不真正发送消息到MQ
@@ -39,15 +39,17 @@ public class DataChangeMessageProducer {
      * @author liwei
      */
     public void sendMsg(QueueNameEnum queueNameEnum, DataChangeMessage dataChangeMessage) {
+        Preconditions.checkNotNull(queueNameEnum,"queueNameEnum 不能为空");
+        Preconditions.checkNotNull(dataChangeMessage,"dataChangeMessage 不能为空");
         long start = System.currentTimeMillis();
         StringBuilder sb = new StringBuilder();
         sb.append("DataChangeMessageProducer.sendMsg");
         sb.append("|").append(queueNameEnum).append(",").append(dataChangeMessage);
         try {
-            DataChangeMessageEntity dataChangeMessageEntity = MessageConvert.convertMessageData(dataChangeMessage);
+            DataChangeMessageEntity dataChangeMessageEntity = MessageConvert.convertDataChangeMessage(dataChangeMessage);
+            //生产msgId
             dataChangeMessageEntity.setMsgId(ObjectIdGenerator.nextValue());
-            DataChangeMessageWorker dataChangeMessageWorker = new DataChangeMessageWorker(dataChangeMessageEntity);
-//            dataChangeMessageDao.insert(dataChangeMessageEntity);
+            dataChangeMessageDao.insert(dataChangeMessageEntity);
             dataChangeMessageSendExecutor.execute(dataChangeMessageEntity);
             sb.append("|Success");
         } catch (RuntimeException e) {

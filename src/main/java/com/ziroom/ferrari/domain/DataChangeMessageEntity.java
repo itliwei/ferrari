@@ -53,9 +53,4 @@ public class DataChangeMessageEntity extends IdEntity {
     //消息消费时间
     @Column(value = "consume_time")
     private long consumeTime;
-
-    public String toJsonStr() {
-        return JSON.toJSONString(this);
-    }
-
 }

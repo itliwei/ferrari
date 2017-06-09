@@ -4,7 +4,6 @@ import com.ziroom.ferrari.exception.DataChangeMessageSendException;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashSet;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
@@ -13,7 +12,7 @@ import java.util.concurrent.TimeUnit;
  * Created by liwei on 2017/6/7 0007.
  */
 @Slf4j
-public class MessageWorkerQueue extends PriorityBlockingQueue<Runnable> implements BlockingQueue<Runnable>{
+public class MessageWorkerQueue extends PriorityBlockingQueue<Runnable> {
     private static final int DEFAULT_INITIAL_CAPACITY = 20;
 
     private transient HashSet<String> keySet = new HashSet<>();
@@ -27,27 +26,39 @@ public class MessageWorkerQueue extends PriorityBlockingQueue<Runnable> implemen
     }
     /**
      * 放置元素
-     * @param dataChangeMessageWorker
+     * @param runnable DataChangeMessageWorker
      * @throws DataChangeMessageSendException
      */
-    public synchronized void put(DataChangeMessageWorker dataChangeMessageWorker) throws DataChangeMessageSendException {
-        if(this.keySet.add(dataChangeMessageWorker.getDataChangeMessageEntity().getMsgId())) {
-            super.put(dataChangeMessageWorker);
+    public void put(Runnable runnable) {
+        DataChangeMessageWorker worker = (DataChangeMessageWorker) runnable;
+        log.info("MessageWorkerQueue offer :"+worker.getDataChangeMessageEntity());
+        if (this.size()>= DEFAULT_INITIAL_CAPACITY){
+//            throw new DataChangeMessageSendException("队列任务数超出最大数");
+            log.error("大于最大线程数："+this.size());
+            return;
+        }
+        if(this.keySet.add(worker.getDataChangeMessageEntity().getMsgId())) {
+            super.put(worker);
         }
     }
     /**
      * 放置元素
-     * @param dataChangeMessageWorker
+     * @param runnable Runnable
      * @throws DataChangeMessageSendException
      */
-    public synchronized void offer(DataChangeMessageWorker dataChangeMessageWorker) throws DataChangeMessageSendException {
-        log.info("MessageWorkerQueue offer :"+dataChangeMessageWorker.toString());
-        if (this.size()>DEFAULT_INITIAL_CAPACITY){
-            throw new DataChangeMessageSendException("队列任务数超出最大数");
+    public boolean offer(Runnable runnable) {
+        DataChangeMessageWorker worker = (DataChangeMessageWorker) runnable;
+        log.info("MessageWorkerQueue offer :"+worker.getDataChangeMessageEntity());
+        if (this.size()>= DEFAULT_INITIAL_CAPACITY){
+//            throw new DataChangeMessageSendException("队列任务数超出最大数");
+            log.error("大于最大线程数："+this.size());
+            return false;
         }
-        if(this.keySet.add(dataChangeMessageWorker.getDataChangeMessageEntity().getMsgId())) {
-            super.offer(dataChangeMessageWorker);
+        if(this.keySet.add(worker.getDataChangeMessageEntity().getMsgId())) {
+            super.offer(worker);
+            return  true;
         }
+        return false;
     }
     /**
      * 取出元素
@@ -55,19 +66,19 @@ public class MessageWorkerQueue extends PriorityBlockingQueue<Runnable> implemen
      * @throws InterruptedException
      */
     public DataChangeMessageWorker take() throws InterruptedException {
-        log.info("MessageWorkerQueue take ");
         DataChangeMessageWorker dataChangeMessageQueueTask = (DataChangeMessageWorker)super.take();
         if(dataChangeMessageQueueTask != null) {
             this.keySet.remove(dataChangeMessageQueueTask.getDataChangeMessageEntity().getMsgId());
+            log.info("MessageWorkerQueue take :"+dataChangeMessageQueueTask.getDataChangeMessageEntity());
         }
         return dataChangeMessageQueueTask;
     }
 
     public DataChangeMessageWorker poll(long timeout, TimeUnit unit) throws InterruptedException {
-        log.info("MessageWorkerQueue pool ");
         DataChangeMessageWorker dataChangeMessageQueueTask = (DataChangeMessageWorker)super.poll(timeout, unit);
         if(dataChangeMessageQueueTask != null) {
             this.keySet.remove(dataChangeMessageQueueTask.getDataChangeMessageEntity().getMsgId());
+            log.info("MessageWorkerQueue poll :"+dataChangeMessageQueueTask.getDataChangeMessageEntity());
         }
         return dataChangeMessageQueueTask;
     }

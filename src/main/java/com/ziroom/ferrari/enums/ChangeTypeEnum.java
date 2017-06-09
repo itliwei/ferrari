@@ -20,4 +20,14 @@ public enum ChangeTypeEnum {
         this.desc = desc;
     }
 
+    public static  ChangeTypeEnum getByCode(int code){
+        ChangeTypeEnum[] values = ChangeTypeEnum.values();
+        for (ChangeTypeEnum typeEnum : values){
+            if (typeEnum.getCode() == code){
+                return typeEnum;
+            }
+        }
+        return null;
+    }
+
 }
