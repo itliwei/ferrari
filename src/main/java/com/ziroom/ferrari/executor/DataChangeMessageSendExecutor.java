@@ -3,7 +3,6 @@ package com.ziroom.ferrari.executor;
 import com.google.common.collect.Maps;
 import com.ziroom.ferrari.domain.DataChangeMessageEntity;
 import com.ziroom.ferrari.task.*;
-import com.ziroom.ferrari.vo.DataChangeMessage;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -49,9 +48,10 @@ public class DataChangeMessageSendExecutor {
 
     public void execute(DataChangeMessageEntity dataChangeMessageEntity) {
             int shardingItem = new Long(dataChangeMessageEntity.getChangeKey()).intValue() % threadPoolCount;
-            ExecutorService executorService = executorMap.get(shardingItem);
+            ThreadPoolExecutor executorService = executorMap.get(shardingItem);
             executorService.execute(new DataChangeMessageWorker(dataChangeMessageEntity));
-            log.info("changeKey : " + dataChangeMessageEntity.getChangeKey() + "shardingItem：" +shardingItem);
+            log.info("changeKey : " + dataChangeMessageEntity.getChangeKey() + "shardingItem：" +shardingItem+"当前积压："
+                    +executorService.getQueue().size());
     }
 
     private void taskBacklogStatistics() {
@@ -68,11 +68,11 @@ public class DataChangeMessageSendExecutor {
         DataChangeMessageSendExecutor dataChangeMessageSendExecutor = new DataChangeMessageSendExecutor();
         //线程池发送MQ
         for(int i=1;i<100;i++) {
-            int r = (int)Math.random()*100;
             DataChangeMessageEntity entity = new DataChangeMessageEntity();
             entity.setMsgFunction("AMS");
             entity.setMsgId(""+i);
             entity.setChangeKey(""+i);
+            dataChangeMessageSendExecutor.execute(entity);
         }
 
     }

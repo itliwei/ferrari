@@ -44,7 +44,7 @@ public class DataChangeMessageWorker implements Runnable{
         try {
             QueueName queueName = new QueueName(dataChangeMessageEntity.getMsgSystem(),dataChangeMessageEntity.getMsgModule(),
                     dataChangeMessageEntity.getMsgFunction());
-            rabbitMqSendClient.sendQueue(queueName,dataChangeMessageEntity.toJsonStr());
+//            rabbitMqSendClient.sendQueue(queueName,dataChangeMessageEntity.toJsonStr());
 //            dataChangeMessageDao.update(dataChangeMessageEntity);
         }catch (GaeaRabbitMQException exp){
             log.error("SendToMqTask sendToMq GaeaRabbitMQException :{}" ,exp);
