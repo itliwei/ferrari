@@ -25,7 +25,7 @@ import java.util.concurrent.TimeUnit;
  */
 @Slf4j
 @Getter
-public class DataChangeMessageWorker implements Runnable{
+public class DataChangeMessageWorker implements Runnable , Comparable<DataChangeMessageWorker>  {
     @Autowired
     private DataChangeMessageDao dataChangeMessageDao;
     @Autowired
@@ -42,7 +42,8 @@ public class DataChangeMessageWorker implements Runnable{
     @Override
     public void run() {
         try {
-            TimeUnit.MILLISECONDS.sleep(100);
+            log.info("run -----------------------"+dataChangeMessageEntity.getMsgId());
+            TimeUnit.MILLISECONDS.sleep(1000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -61,6 +62,15 @@ public class DataChangeMessageWorker implements Runnable{
             log.error("SendToMqTask sendToMq exception :{}" ,e);
             dataChangeMessageEntity.setMsgStatus(MsgStatusEnum.MSG_SEND_FAILURE.getCode());
 //            dataChangeMessageDao.update(dataChangeMessageEntity);
+        }
+    }
+
+    @Override
+    public int compareTo(DataChangeMessageWorker o) {
+        if (this.getDataChangeMessageEntity().getChangeTime() > o.getDataChangeMessageEntity().getChangeTime()){
+            return 1;
+        }else{
+            return -1;
         }
     }
 }

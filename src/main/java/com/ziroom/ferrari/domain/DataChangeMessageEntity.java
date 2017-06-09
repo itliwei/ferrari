@@ -13,7 +13,7 @@ import lombok.ToString;
 @Setter
 @Getter
 @ToString
-public class DataChangeMessageEntity extends IdEntity implements Comparable<DataChangeMessageEntity>{
+public class DataChangeMessageEntity extends IdEntity {
     //消息ID
     private String msgId;
     //系统
@@ -43,8 +43,4 @@ public class DataChangeMessageEntity extends IdEntity implements Comparable<Data
         return JSON.toJSONString(this);
     }
 
-    @Override
-    public int compareTo(DataChangeMessageEntity o) {
-        return this.getChangeTime() > o.getChangeTime()?-1:1;
-    }
 }

@@ -50,6 +50,7 @@ public class DataChangeMessageSendExecutor {
         log.info("DataChangeMessageSendExecutor execute :"+dataChangeMessageEntity.toString());
         int shardingItem = new Long(dataChangeMessageEntity.getChangeKey()).intValue() % threadPoolCount;
         ThreadPoolExecutor executorService = executorMap.get(shardingItem);
+
         executorService.execute(new DataChangeMessageWorker(dataChangeMessageEntity));
         log.info("changeKey : " + dataChangeMessageEntity.getChangeKey() + "shardingItem：" +shardingItem+"当前积压："
                     +executorService.getQueue().size());
