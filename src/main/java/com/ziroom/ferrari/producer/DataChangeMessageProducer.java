@@ -46,6 +46,7 @@ public class DataChangeMessageProducer {
         try {
             DataChangeMessageEntity dataChangeMessageEntity = MessageConvert.convertMessageData(dataChangeMessage);
             dataChangeMessageEntity.setMsgId(ObjectIdGenerator.nextValue());
+            DataChangeMessageWorker dataChangeMessageWorker = new DataChangeMessageWorker(dataChangeMessageEntity);
 //            dataChangeMessageDao.insert(dataChangeMessageEntity);
             dataChangeMessageSendExecutor.execute(dataChangeMessageEntity);
             sb.append("|Success");
@@ -59,8 +60,8 @@ public class DataChangeMessageProducer {
     }
 
     public static void main(String[] args){
-        for (int i=0;i<1000;i++){
-            DataChangeMessageProducer producer = new DataChangeMessageProducer();
+        DataChangeMessageProducer producer = new DataChangeMessageProducer();
+        for (int i=0;i<100;i++){
             DataChangeMessage dataChangeMessage = new DataChangeMessage();
             dataChangeMessage.setChangeKey(i+"");
             dataChangeMessage.setChangeTime(DateUtils.format2Long(new Date()));

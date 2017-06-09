@@ -4,6 +4,7 @@ import com.ziroom.ferrari.exception.DataChangeMessageSendException;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashSet;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
@@ -12,7 +13,7 @@ import java.util.concurrent.TimeUnit;
  * Created by liwei on 2017/6/7 0007.
  */
 @Slf4j
-public class MessageWorkerQueue extends PriorityBlockingQueue<Runnable> {
+public class MessageWorkerQueue extends PriorityBlockingQueue<Runnable> implements BlockingQueue<Runnable>{
     private static final int DEFAULT_INITIAL_CAPACITY = 20;
 
     private transient HashSet<String> keySet = new HashSet<>();

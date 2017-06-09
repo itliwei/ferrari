@@ -25,7 +25,7 @@ public class DataChangeMessageSendExecutor {
 
 
     public DataChangeMessageSendExecutor() {
-        this(4);
+        this(1);
     }
 
     public DataChangeMessageSendExecutor(int threadPoolCount) {

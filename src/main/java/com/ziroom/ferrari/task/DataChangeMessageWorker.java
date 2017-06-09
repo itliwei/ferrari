@@ -43,26 +43,26 @@ public class DataChangeMessageWorker implements Runnable , Comparable<DataChange
     public void run() {
         try {
             log.info("run -----------------------"+dataChangeMessageEntity.getMsgId());
-            TimeUnit.MILLISECONDS.sleep(1000);
+            TimeUnit.MILLISECONDS.sleep(500);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
         log.info("dataChangeMessage:",dataChangeMessageEntity.toString());
-        try {
-            QueueName queueName = new QueueName(dataChangeMessageEntity.getMsgSystem(),dataChangeMessageEntity.getMsgModule(),
-                    dataChangeMessageEntity.getMsgFunction());
-//            rabbitMqSendClient.sendQueue(queueName,dataChangeMessageEntity.toJsonStr());
-//            dataChangeMessageDao.update(dataChangeMessageEntity);
-        }catch (GaeaRabbitMQException exp){
-            log.error("SendToMqTask sendToMq GaeaRabbitMQException :{}" ,exp);
-            dataChangeMessageEntity.setMsgStatus(MsgStatusEnum.MSG_SEND_FAILURE.getCode());
-//            dataChangeMessageDao.update(dataChangeMessageEntity);
-            //更改数据库状态
-        } catch (Exception e) {
-            log.error("SendToMqTask sendToMq exception :{}" ,e);
-            dataChangeMessageEntity.setMsgStatus(MsgStatusEnum.MSG_SEND_FAILURE.getCode());
-//            dataChangeMessageDao.update(dataChangeMessageEntity);
-        }
+//        try {
+//            QueueName queueName = new QueueName(dataChangeMessageEntity.getMsgSystem(),dataChangeMessageEntity.getMsgModule(),
+//                    dataChangeMessageEntity.getMsgFunction());
+////            rabbitMqSendClient.sendQueue(queueName,dataChangeMessageEntity.toJsonStr());
+////            dataChangeMessageDao.update(dataChangeMessageEntity);
+//        }catch (GaeaRabbitMQException exp){
+//            log.error("SendToMqTask sendToMq GaeaRabbitMQException :{}" ,exp);
+//            dataChangeMessageEntity.setMsgStatus(MsgStatusEnum.MSG_SEND_FAILURE.getCode());
+////            dataChangeMessageDao.update(dataChangeMessageEntity);
+//            //更改数据库状态
+//        } catch (Exception e) {
+//            log.error("SendToMqTask sendToMq exception :{}" ,e);
+//            dataChangeMessageEntity.setMsgStatus(MsgStatusEnum.MSG_SEND_FAILURE.getCode());
+////            dataChangeMessageDao.update(dataChangeMessageEntity);
+//        }
     }
 
     @Override
