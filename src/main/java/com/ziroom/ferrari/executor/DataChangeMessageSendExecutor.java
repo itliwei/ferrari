@@ -60,6 +60,13 @@ public class DataChangeMessageSendExecutor {
             Map.Entry<Integer, ThreadPoolExecutor> entry = iterator.next();
             Integer key = entry.getKey();
             ThreadPoolExecutor threadPoolExecutor = entry.getValue();
+            //线程已经关闭，则新建一个线程
+            if (threadPoolExecutor.isShutdown()){
+                threadPoolExecutor = new ThreadPoolExecutor(1, 1,
+                        0L, TimeUnit.MILLISECONDS,
+                        new MessageWorkerQueue());
+                executorMap.put(key, threadPoolExecutor);
+            }
             log.info("DataChangeMessageSendExecutor线程池：" + key + "当前积压数：" + threadPoolExecutor.getQueue().size());
         }
     }

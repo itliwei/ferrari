@@ -13,12 +13,17 @@ import java.util.concurrent.TimeUnit;
 public class MessageWorkerQueue extends PriorityBlockingQueue<Runnable> {
 
     private transient HashSet<String> keySet = new HashSet<>();
+
+    public MessageWorkerQueue(int initialCapacity){
+
+    }
     /**
      * 放置元素
      * @param dataChangeMessageWorker
      * @throws DataChangeMessageSendException
      */
     public synchronized void put(DataChangeMessageWorker dataChangeMessageWorker) throws DataChangeMessageSendException {
+
         if(this.keySet.add(dataChangeMessageWorker.getDataChangeMessageEntity().getMsgId())) {
             super.put(dataChangeMessageWorker);
         }
