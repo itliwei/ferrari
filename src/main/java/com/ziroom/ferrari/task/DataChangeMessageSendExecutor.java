@@ -6,9 +6,9 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-import java.util.Iterator;
 import java.util.Map;
-import java.util.concurrent.*;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 发送任务线程池
@@ -18,72 +18,34 @@ import java.util.concurrent.*;
 @Getter
 @Component
 public class DataChangeMessageSendExecutor {
-    private int threadPoolCount;
+    private int threadPoolCount = Runtime.getRuntime().availableProcessors();
     private Map<Integer, ThreadPoolExecutor> executorMap = Maps.newHashMap();
-    private final ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
-    private static  final  String JOB_NAME="MessageSendExecutor Thread：";
 
     public DataChangeMessageSendExecutor() {
-        this(1);
-    }
-
-    public DataChangeMessageSendExecutor(int threadPoolCount) {
-        this.threadPoolCount = threadPoolCount;
         for (int i = 0; i < threadPoolCount; i++) {
             ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(1, 1,
                     0L, TimeUnit.MILLISECONDS,
                     new MessageWorkerQueue());//拒绝策略
             executorMap.put(i, threadPoolExecutor);
         }
-
-        //统计线程池
-        scheduledExecutorService.scheduleAtFixedRate(new Runnable() {
-            @Override
-            public void run() {
-                taskBacklogStatistics();
-            }
-        }, 0L, 2L, TimeUnit.MINUTES);
     }
 
     public void execute(DataChangeMessageEntity dataChangeMessageEntity) {
-        log.info("DataChangeMessageSendExecutor execute :"+dataChangeMessageEntity.toString());
-        int shardingItem = new Long(dataChangeMessageEntity.getChangeKey()).intValue() % threadPoolCount;
+        //保证同一房间的消息放到同一队列由同一个线程处理
+        int shardingItem = dataChangeMessageEntity.getChangeKey().hashCode() % threadPoolCount;
         ThreadPoolExecutor executorService = executorMap.get(shardingItem);
-        /* jobName */
-        String sbName = JOB_NAME + dataChangeMessageEntity.getMsgSystem() + "_" +
-                dataChangeMessageEntity.getMsgModule() + "_" +
-                dataChangeMessageEntity.getMsgFunction() + "_" +
-                shardingItem;
-        executorService.execute(new DataChangeMessageWorker(sbName,dataChangeMessageEntity));
-        log.info("changeKey : " + dataChangeMessageEntity.getChangeKey() + "shardingItem：" +shardingItem+"当前积压："
-                    +executorService.getQueue().size());
-    }
 
-    private void taskBacklogStatistics() {
-        Iterator<Map.Entry<Integer, ThreadPoolExecutor>> iterator = executorMap.entrySet().iterator();
-        while (iterator.hasNext()) {
-            Map.Entry<Integer, ThreadPoolExecutor> entry = iterator.next();
-            Integer key = entry.getKey();
-            ThreadPoolExecutor threadPoolExecutor = entry.getValue();
-            //线程已经关闭，则新建一个线程
-            if (threadPoolExecutor.isShutdown()){
-                threadPoolExecutor = new ThreadPoolExecutor(1, 1,
-                        0L, TimeUnit.MILLISECONDS,
-                        new MessageWorkerQueue());
-                executorMap.put(key, threadPoolExecutor);
-            }
-            log.info("DataChangeMessageSendExecutor线程池：" + key + "当前积压数：" + threadPoolExecutor.getQueue().size());
-        }
+        executorService.execute(new DataChangeMessageWorker(null, dataChangeMessageEntity));
     }
 
     public static void main(String[] args) throws InterruptedException {
         DataChangeMessageSendExecutor dataChangeMessageSendExecutor = new DataChangeMessageSendExecutor();
         //线程池发送MQ
-        for(int i=1;i<100;i++) {
+        for (int i = 1; i < 100; i++) {
             DataChangeMessageEntity entity = new DataChangeMessageEntity();
             entity.setMsgFunction("AMS");
-            entity.setMsgId(""+i);
-            entity.setChangeKey(""+i);
+            entity.setMsgId("" + i);
+            entity.setChangeKey("" + i);
             dataChangeMessageSendExecutor.execute(entity);
         }
 

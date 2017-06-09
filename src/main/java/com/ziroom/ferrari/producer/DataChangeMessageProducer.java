@@ -25,9 +25,9 @@ import java.util.Date;
 @Service
 public class DataChangeMessageProducer {
     @Autowired
-    private DataChangeMessageSendExecutor dataChangeMessageSendExecutor = new DataChangeMessageSendExecutor();
+    private DataChangeMessageSendExecutor dataChangeMessageSendExecutor;
     @Autowired
-    private DataChangeMessageDao dataChangeMessageDao = new DataChangeMessageDao();
+    private DataChangeMessageDao dataChangeMessageDao;
 
     /**
      * 不真正发送消息到MQ
@@ -39,8 +39,8 @@ public class DataChangeMessageProducer {
      * @author liwei
      */
     public void sendMsg(QueueNameEnum queueNameEnum, DataChangeMessage dataChangeMessage) {
-        Preconditions.checkNotNull(queueNameEnum,"queueNameEnum 不能为空");
-        Preconditions.checkNotNull(dataChangeMessage,"dataChangeMessage 不能为空");
+        Preconditions.checkNotNull(queueNameEnum, "queueNameEnum 不能为空");
+        Preconditions.checkNotNull(dataChangeMessage, "dataChangeMessage 不能为空");
         long start = System.currentTimeMillis();
         StringBuilder sb = new StringBuilder();
         sb.append("DataChangeMessageProducer.sendMsg");
@@ -61,15 +61,15 @@ public class DataChangeMessageProducer {
         }
     }
 
-    public static void main(String[] args){
+    public static void main(String[] args) {
         DataChangeMessageProducer producer = new DataChangeMessageProducer();
-        for (int i=0;i<100;i++){
+        for (int i = 0; i < 100; i++) {
             DataChangeMessage dataChangeMessage = new DataChangeMessage();
-            dataChangeMessage.setChangeKey(i+"");
+            dataChangeMessage.setChangeKey(i + "");
             dataChangeMessage.setChangeTime(DateUtils.format2Long(new Date()));
             dataChangeMessage.setChangeEntityName("room");
             dataChangeMessage.setChangeType(ChangeTypeEnum.DELETE);
-            producer.sendMsg(QueueNameEnum.AMS,dataChangeMessage);
+            producer.sendMsg(QueueNameEnum.AMS, dataChangeMessage);
         }
     }
 }
