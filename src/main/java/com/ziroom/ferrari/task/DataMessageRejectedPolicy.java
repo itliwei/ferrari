@@ -12,6 +12,5 @@ public class DataMessageRejectedPolicy implements RejectedExecutionHandler{
     @Override
     public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
         // TODO 做点什么
-
     }
 }

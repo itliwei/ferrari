@@ -50,10 +50,12 @@ public class DataChangeMessageProducer {
             //生产msgId
             dataChangeMessageEntity.setMsgId(ObjectIdGenerator.nextValue());
             dataChangeMessageDao.insert(dataChangeMessageEntity);
+            sb.append("|插入数据库:success");
+            //发送任务
             dataChangeMessageSendExecutor.execute(dataChangeMessageEntity);
-            sb.append("|Success");
+            sb.append("|发送任务:Success");
         } catch (RuntimeException e) {
-            sb.append("|Failed:" + e.getMessage());
+            sb.append("|发送任务:Failed:" + e.getMessage());
             throw new DataChangeMessageSendException("DataChangeMessageProducer.sendMsg Error", e);
         } finally {
             sb.append("|Time:" + (System.currentTimeMillis() - start));

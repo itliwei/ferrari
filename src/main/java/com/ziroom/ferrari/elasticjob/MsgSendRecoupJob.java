@@ -56,10 +56,17 @@ public class MsgSendRecoupJob extends AbstractSimpleElasticJob {
         logSB.append("|得到的分片项：" + shardingItems.toString()).append(SymbolConstant.BAR);
 
         //得到所有待处理任务
-        List<DataChangeMessageEntity> allShardDatas = getAllShardDatas();
-        if (CollectionUtils.isEmpty(allShardDatas)) {
-            logSB.append("|没有待发送的消息，放弃执行");
-            log.warn(logSB.toString());
+        List<DataChangeMessageEntity> allShardDatas;
+        try {
+            allShardDatas = getAllShardDatas();
+            if (CollectionUtils.isEmpty(allShardDatas)) {
+                logSB.append("|没有待发送的消息，放弃执行");
+                log.warn(logSB.toString());
+                return;
+            }
+        }catch (RuntimeException e){
+            logSB.append("|getAllShardDatas Exception:" + e.getMessage());
+            log.error(logSB.toString());
             return;
         }
 

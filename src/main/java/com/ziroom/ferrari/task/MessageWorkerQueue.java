@@ -32,11 +32,11 @@ public class MessageWorkerQueue extends PriorityBlockingQueue<Runnable> {
     public void put(Runnable runnable) {
         DataChangeMessageWorker worker = (DataChangeMessageWorker) runnable;
         log.info("MessageWorkerQueue offer :"+worker.getDataChangeMessageEntity());
-        if (this.size()>= DEFAULT_INITIAL_CAPACITY){
-//            throw new DataChangeMessageSendException("队列任务数超出最大数");
-            log.error("大于最大线程数："+this.size());
-            return;
-        }
+//        if (this.size()>= DEFAULT_INITIAL_CAPACITY){
+////            throw new DataChangeMessageSendException("队列任务数超出最大数");
+//            log.error("大于最大线程数："+this.size());
+//            return;
+//        }
         if(this.keySet.add(worker.getDataChangeMessageEntity().getMsgId())) {
             super.put(worker);
         }
@@ -49,11 +49,11 @@ public class MessageWorkerQueue extends PriorityBlockingQueue<Runnable> {
     public boolean offer(Runnable runnable) {
         DataChangeMessageWorker worker = (DataChangeMessageWorker) runnable;
         log.info("MessageWorkerQueue offer :"+worker.getDataChangeMessageEntity());
-        if (this.size()>= DEFAULT_INITIAL_CAPACITY){
+       /* if (this.size()>= DEFAULT_INITIAL_CAPACITY){
 //            throw new DataChangeMessageSendException("队列任务数超出最大数");
             log.error("大于最大线程数："+this.size());
             return false;
-        }
+        }*/
         if(this.keySet.add(worker.getDataChangeMessageEntity().getMsgId())) {
             super.offer(worker);
             return  true;
