@@ -4,7 +4,7 @@ import com.google.common.base.Preconditions;
 import com.ziroom.ferrari.domain.DataChangeMessageDao;
 import com.ziroom.ferrari.domain.DataChangeMessageEntity;
 import com.ziroom.ferrari.enums.MsgStatusEnum;
-import com.ziroom.ferrari.executor.DataChangeMessageSendExecutor;
+import com.ziroom.ferrari.task.DataChangeMessageSendExecutor;
 import com.ziroom.rent.common.orm.query.Criteria;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

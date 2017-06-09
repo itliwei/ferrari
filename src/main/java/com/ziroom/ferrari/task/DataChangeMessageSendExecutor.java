@@ -1,8 +1,7 @@
-package com.ziroom.ferrari.executor;
+package com.ziroom.ferrari.task;
 
 import com.google.common.collect.Maps;
 import com.ziroom.ferrari.domain.DataChangeMessageEntity;
-import com.ziroom.ferrari.task.*;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;

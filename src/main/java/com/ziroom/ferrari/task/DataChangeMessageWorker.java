@@ -4,20 +4,14 @@ import com.ziroom.ferrari.convert.MessageConvert;
 import com.ziroom.ferrari.domain.DataChangeMessageDao;
 import com.ziroom.ferrari.domain.DataChangeMessageEntity;
 import com.ziroom.ferrari.enums.MsgStatusEnum;
-import com.ziroom.ferrari.enums.QueueNameEnum;
-import com.ziroom.ferrari.executor.DataChangeMessageSendExecutor;
 import com.ziroom.ferrari.vo.DataChangeMessage;
 import com.ziroom.gaea.mq.rabbitmq.client.RabbitMqSendClient;
 import com.ziroom.gaea.mq.rabbitmq.entity.QueueName;
 import com.ziroom.gaea.mq.rabbitmq.exception.GaeaRabbitMQException;
-import com.ziroom.rent.common.util.DateUtils;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.Date;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 
 /**
  * 执行任务的worker
