@@ -59,9 +59,9 @@ public class DataChangeMessageWorker implements Runnable , Comparable<DataChange
     @Override
     public int compareTo(DataChangeMessageWorker o) {
         if (this.getDataChangeMessageEntity().getChangeTime() > o.getDataChangeMessageEntity().getChangeTime()){
-            return 1;
-        }else{
             return -1;
+        }else{
+            return 1;
         }
     }
 }
