@@ -1,6 +1,5 @@
 package com.ziroom.ferrari.domain;
 
-import com.alibaba.fastjson.JSON;
 import com.ziroom.rent.common.orm.dao.annotation.Column;
 import com.ziroom.rent.common.orm.dao.annotation.Table;
 import com.ziroom.rent.common.orm.entity.IdEntity;
