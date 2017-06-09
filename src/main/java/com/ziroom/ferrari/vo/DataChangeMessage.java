@@ -15,7 +15,7 @@ import lombok.ToString;
 @Getter
 @ToString
 public class DataChangeMessage {
-    //消息ID
+    //消息ID,jar包内生产
     private String msgId;
     //变更数据实体名称
     private String changeEntityName;

@@ -4,7 +4,6 @@ import com.ziroom.ferrari.exception.DataChangeMessageSendException;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashSet;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
@@ -44,8 +43,10 @@ public class MessageWorkerQueue extends PriorityBlockingQueue<Runnable> {
     public boolean offer(Runnable runnable) {
         DataChangeMessageWorker worker = (DataChangeMessageWorker) runnable;
         log.info("MessageWorkerQueue offer :"+worker.getDataChangeMessageEntity());
-        if (this.size()>DEFAULT_INITIAL_CAPACITY){
-            throw new DataChangeMessageSendException("队列任务数超出最大数");
+        if (this.size()>= DEFAULT_INITIAL_CAPACITY){
+//            throw new DataChangeMessageSendException("队列任务数超出最大数");
+            log.error("最大线程数："+this.size());
+            return false;
         }
         if(this.keySet.add(worker.getDataChangeMessageEntity().getMsgId())) {
             super.offer(worker);
@@ -62,8 +63,8 @@ public class MessageWorkerQueue extends PriorityBlockingQueue<Runnable> {
         DataChangeMessageWorker dataChangeMessageQueueTask = (DataChangeMessageWorker)super.take();
         if(dataChangeMessageQueueTask != null) {
             this.keySet.remove(dataChangeMessageQueueTask.getDataChangeMessageEntity().getMsgId());
+            log.info("MessageWorkerQueue take :"+dataChangeMessageQueueTask.getDataChangeMessageEntity());
         }
-        log.info("MessageWorkerQueue take :"+dataChangeMessageQueueTask.getDataChangeMessageEntity());
         return dataChangeMessageQueueTask;
     }
 
@@ -71,6 +72,7 @@ public class MessageWorkerQueue extends PriorityBlockingQueue<Runnable> {
         DataChangeMessageWorker dataChangeMessageQueueTask = (DataChangeMessageWorker)super.poll(timeout, unit);
         if(dataChangeMessageQueueTask != null) {
             this.keySet.remove(dataChangeMessageQueueTask.getDataChangeMessageEntity().getMsgId());
+            log.info("MessageWorkerQueue poll :"+dataChangeMessageQueueTask.getDataChangeMessageEntity());
         }
         return dataChangeMessageQueueTask;
     }

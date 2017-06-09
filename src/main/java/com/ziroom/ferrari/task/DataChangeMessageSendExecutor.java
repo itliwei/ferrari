@@ -32,7 +32,14 @@ public class DataChangeMessageSendExecutor {
         for (int i = 0; i < threadPoolCount; i++) {
             ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(1, 1,
                     0L, TimeUnit.MILLISECONDS,
-                    new MessageWorkerQueue());
+                    new MessageWorkerQueue(),
+                    Executors.defaultThreadFactory(),
+                    new RejectedExecutionHandler() {
+                        @Override
+                        public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
+
+                        }
+                    });
             executorMap.put(i, threadPoolExecutor);
         }
 
