@@ -11,8 +11,11 @@ import com.ziroom.ferrari.task.DataChangeMessageSendExecutor;
 import com.ziroom.ferrari.vo.DataChangeMessage;
 import com.ziroom.rent.common.idgenerator.ObjectIdGenerator;
 import com.ziroom.rent.common.util.DateUtils;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.support.incrementer.MySQLMaxValueIncrementer;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -21,11 +24,13 @@ import java.util.Date;
 /**
  * Created by homelink on 2017/5/31 0031.
  */
+@Getter
+@Setter
 @Slf4j
-@Service
+@Service(value ="com.ziroom.ferrari.producer.DataChangeMessageProducer")
 public class DataChangeMessageProducer {
     @Autowired
-    private DataChangeMessageSendExecutor dataChangeMessageSendExecutor;
+    private DataChangeMessageSendExecutor dataChangeMessageSendExecutor ;
     @Autowired
     private DataChangeMessageDao dataChangeMessageDao;
 
@@ -47,8 +52,12 @@ public class DataChangeMessageProducer {
         sb.append("|").append(queueNameEnum).append(",").append(dataChangeMessage);
         try {
             DataChangeMessageEntity dataChangeMessageEntity = MessageConvert.convertDataChangeMessage(dataChangeMessage);
+            dataChangeMessageEntity.setId(MySQLMaxValueIncrementer.class.getModifiers());
             //生产msgId
             dataChangeMessageEntity.setMsgId(ObjectIdGenerator.nextValue());
+            dataChangeMessageEntity.setMsgSystem(queueNameEnum.getSystem());
+            dataChangeMessageEntity.setMsgModule(queueNameEnum.getModule());
+            dataChangeMessageEntity.setMsgFunction(queueNameEnum.getFunction());
             dataChangeMessageDao.insert(dataChangeMessageEntity);
             sb.append("|插入数据库:success");
             //发送任务
