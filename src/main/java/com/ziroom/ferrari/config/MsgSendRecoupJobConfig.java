@@ -36,6 +36,7 @@ public class MsgSendRecoupJobConfig {
     public JobScheduler dataChangeMessageJobScheduler() {
         ZookeeperConfiguration ferrariZkConfig = new ZookeeperConfiguration(zkServerList, "ferrari-job", 1000, 3000, 3);
         CoordinatorRegistryCenter regCenter = new ZookeeperRegistryCenter(ferrariZkConfig);
+        regCenter.init();
 
         SimpleJobConfiguration simpleJobConfig = JobConfigurationFactory
                 .createSimpleJobConfigurationBuilder(MsgSendRecoupJob.JOB_NAME, MsgSendRecoupJob.class, shardingCount, jobCron)
