@@ -33,6 +33,8 @@ public class DataChangeMessageWorker implements Runnable, Comparable<DataChangeM
     private String jobName;
     private DataChangeMessageEntity dataChangeMessageEntity;
 
+    public DataChangeMessageWorker(){}
+
     public DataChangeMessageWorker(String jobName, DataChangeMessageEntity dataChangeMessageEntity) {
         this.jobName = jobName;
         this.dataChangeMessageEntity = dataChangeMessageEntity;
