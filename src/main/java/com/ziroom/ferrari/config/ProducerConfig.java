@@ -26,7 +26,7 @@ public class ProducerConfig {
         return new RabbitConnectionFactory();
     }
 
-    @Bean
+    @Bean(name = "rabbitMqSendClient")
     public RabbitMqSendClient rabbitMqSendClient(RabbitConnectionFactory rabbitConnectionFactory) {
         rabbitConnectionFactory.init();
         RabbitMqSendClient client = new RabbitMqSendClient(rabbitConnectionFactory);

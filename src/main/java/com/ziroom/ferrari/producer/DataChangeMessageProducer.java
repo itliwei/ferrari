@@ -9,6 +9,7 @@ import com.ziroom.ferrari.enums.QueueNameEnum;
 import com.ziroom.ferrari.exception.DataChangeMessageSendException;
 import com.ziroom.ferrari.task.DataChangeMessageSendExecutor;
 import com.ziroom.ferrari.vo.DataChangeMessage;
+import com.ziroom.gaea.mq.rabbitmq.client.RabbitMqSendClient;
 import com.ziroom.rent.common.idgenerator.ObjectIdGenerator;
 import com.ziroom.rent.common.util.DateUtils;
 import lombok.Getter;
@@ -33,6 +34,8 @@ public class DataChangeMessageProducer {
     private DataChangeMessageSendExecutor dataChangeMessageSendExecutor ;
     @Autowired
     private DataChangeMessageDao dataChangeMessageDao;
+    @Autowired
+    private RabbitMqSendClient rabbitMqSendClient;
 
     /**
      * 不真正发送消息到MQ
@@ -60,7 +63,8 @@ public class DataChangeMessageProducer {
             dataChangeMessageDao.insert(dataChangeMessageEntity);
             sb.append("|插入数据库:success");
             //发送任务
-            dataChangeMessageSendExecutor.execute(dataChangeMessageEntity);
+            dataChangeMessageSendExecutor.execute(dataChangeMessageEntity,
+                    rabbitMqSendClient,dataChangeMessageDao);
             sb.append("|发送任务:Success");
         } catch (RuntimeException e) {
             sb.append("|发送任务:Failed:" + e.getMessage());
