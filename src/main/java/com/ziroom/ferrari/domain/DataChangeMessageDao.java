@@ -13,6 +13,6 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 @DaoDescription(ormFrame = OrmFrameEnum.JDBC_TEMPLATE,
-        settingBean = "dataChangeMessageDaoSettingBean")
+        settingBean = "masterOnlyJdbcSettings")
 public class DataChangeMessageDao extends BaseDao<DataChangeMessageEntity> {
 }
