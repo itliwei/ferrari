@@ -1,6 +1,7 @@
 package com.ziroom.ferrari.config;
 
 import com.ziroom.ferrari.producer.DataChangeMessageProducer;
+import com.ziroom.ferrari.task.DataChangeMessageSendExecutor;
 import com.ziroom.gaea.mq.rabbitmq.client.RabbitMqSendClient;
 import com.ziroom.gaea.mq.rabbitmq.factory.RabbitConnectionFactory;
 import com.ziroom.gaea.mq.rabbitmq.receive.queue.ExecutorRabbitMqQueueReceiver;
@@ -51,6 +52,11 @@ public class ProducerConfig {
     @Bean(name = "dataChangeMessageProducer")
     public DataChangeMessageProducer mqProduceClient() {
         return new DataChangeMessageProducer();
+    }
+
+    @Bean(name = "dataChangeMessageSendExecutor")
+    public DataChangeMessageSendExecutor dataChangeMessageSendExecutor() {
+        return new DataChangeMessageSendExecutor();
     }
 
 

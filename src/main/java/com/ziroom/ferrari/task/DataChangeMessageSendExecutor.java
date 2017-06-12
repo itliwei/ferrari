@@ -38,17 +38,4 @@ public class DataChangeMessageSendExecutor {
         executorService.execute(new DataChangeMessageWorker(null, dataChangeMessageEntity));
     }
 
-    public static void main(String[] args) throws InterruptedException {
-        DataChangeMessageSendExecutor dataChangeMessageSendExecutor = new DataChangeMessageSendExecutor();
-        //线程池发送MQ
-        for (int i = 1; i < 100; i++) {
-            DataChangeMessageEntity entity = new DataChangeMessageEntity();
-            entity.setMsgFunction("AMS");
-            entity.setMsgId("" + i);
-            entity.setChangeKey("" + i);
-            dataChangeMessageSendExecutor.execute(entity);
-        }
-
-    }
-
 }
