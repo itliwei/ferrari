@@ -52,7 +52,6 @@ public class DataChangeMessageProducer {
         sb.append("|").append(queueNameEnum).append(",").append(dataChangeMessage);
         try {
             DataChangeMessageEntity dataChangeMessageEntity = MessageConvert.convertDataChangeMessage(dataChangeMessage);
-            dataChangeMessageEntity.setId(MySQLMaxValueIncrementer.class.getModifiers());
             //生产msgId
             dataChangeMessageEntity.setMsgId(ObjectIdGenerator.nextValue());
             dataChangeMessageEntity.setMsgSystem(queueNameEnum.getSystem());
