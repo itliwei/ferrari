@@ -9,10 +9,7 @@ import com.ziroom.ferrari.vo.DataChangeMessage;
 import com.ziroom.gaea.mq.rabbitmq.client.RabbitMqSendClient;
 import com.ziroom.gaea.mq.rabbitmq.entity.QueueName;
 import com.ziroom.rent.common.orm.query.Update;
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 
 /**
@@ -20,18 +17,12 @@ import org.springframework.stereotype.Component;
  * Created by homelink on 2017/6/7 0007.
  */
 @Slf4j
-@Getter
-@Component
 public class DataChangeMessageWorker implements Runnable, Comparable<DataChangeMessageWorker> {
-    @Autowired
     private DataChangeMessageDao dataChangeMessageDao;
-    @Autowired
     private RabbitMqSendClient rabbitMqSendClient;
 
     private String jobName;
     private DataChangeMessageEntity dataChangeMessageEntity;
-
-    public DataChangeMessageWorker(){}
 
     public DataChangeMessageWorker(String jobName, DataChangeMessageEntity dataChangeMessageEntity,
                                    RabbitMqSendClient rabbitMqSendClient, DataChangeMessageDao dataChangeMessageDao) {
@@ -88,5 +79,9 @@ public class DataChangeMessageWorker implements Runnable, Comparable<DataChangeM
         long myTime = this.getDataChangeMessageEntity().getChangeTime();
         long ortherTime = o.getDataChangeMessageEntity().getChangeTime();
         return myTime > ortherTime ? 1 : (myTime == ortherTime ? 0 : -1);
+    }
+
+    public DataChangeMessageEntity getDataChangeMessageEntity() {
+        return dataChangeMessageEntity;
     }
 }

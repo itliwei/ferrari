@@ -9,14 +9,12 @@ import com.ziroom.ferrari.enums.QueueNameEnum;
 import com.ziroom.ferrari.exception.DataChangeMessageSendException;
 import com.ziroom.ferrari.task.DataChangeMessageSendExecutor;
 import com.ziroom.ferrari.vo.DataChangeMessage;
-import com.ziroom.gaea.mq.rabbitmq.client.RabbitMqSendClient;
 import com.ziroom.rent.common.idgenerator.ObjectIdGenerator;
 import com.ziroom.rent.common.util.DateUtils;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.support.incrementer.MySQLMaxValueIncrementer;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -28,14 +26,12 @@ import java.util.Date;
 @Getter
 @Setter
 @Slf4j
-@Service(value ="com.ziroom.ferrari.producer.DataChangeMessageProducer")
+@Service(value = "com.ziroom.ferrari.producer.DataChangeMessageProducer")
 public class DataChangeMessageProducer {
     @Autowired
-    private DataChangeMessageSendExecutor dataChangeMessageSendExecutor ;
+    private DataChangeMessageSendExecutor dataChangeMessageSendExecutor;
     @Autowired
     private DataChangeMessageDao dataChangeMessageDao;
-    @Autowired
-    private RabbitMqSendClient rabbitMqSendClient;
 
     /**
      * 不真正发送消息到MQ
@@ -63,8 +59,7 @@ public class DataChangeMessageProducer {
             dataChangeMessageDao.insert(dataChangeMessageEntity);
             sb.append("|插入数据库:success");
             //发送任务
-            dataChangeMessageSendExecutor.execute(dataChangeMessageEntity,
-                    rabbitMqSendClient,dataChangeMessageDao);
+            dataChangeMessageSendExecutor.execute(dataChangeMessageEntity);
             sb.append("|发送任务:Success");
         } catch (RuntimeException e) {
             sb.append("|发送任务:Failed:" + e.getMessage());
