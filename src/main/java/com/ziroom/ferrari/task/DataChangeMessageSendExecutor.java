@@ -6,6 +6,7 @@ import com.ziroom.ferrari.domain.DataChangeMessageEntity;
 import com.ziroom.gaea.mq.rabbitmq.client.RabbitMqSendClient;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
@@ -17,10 +18,15 @@ import java.util.concurrent.TimeUnit;
  * Created by homelink on 2017/6/8 0008.
  */
 @Slf4j
-@Getter
 @Component
 public class DataChangeMessageSendExecutor {
+    @Autowired
+    private DataChangeMessageDao dataChangeMessageDao;
+    @Autowired
+    private RabbitMqSendClient rabbitMqSendClient;
+
     private int threadPoolCount = Runtime.getRuntime().availableProcessors();
+
     private Map<Integer, ThreadPoolExecutor> executorMap = Maps.newHashMap();
 
     public DataChangeMessageSendExecutor() {
@@ -32,13 +38,12 @@ public class DataChangeMessageSendExecutor {
         }
     }
 
-    public void execute(DataChangeMessageEntity dataChangeMessageEntity,
-                        RabbitMqSendClient rabbitMqSendClient, DataChangeMessageDao dataChangeMessageDao) {
+    public void execute(DataChangeMessageEntity dataChangeMessageEntity) {
         //保证同一房间的消息放到同一队列由同一个线程处理
         int shardingItem = dataChangeMessageEntity.getChangeKey().hashCode() % threadPoolCount;
         ThreadPoolExecutor executorService = executorMap.get(shardingItem);
 
-        executorService.execute(new DataChangeMessageWorker(null, dataChangeMessageEntity,rabbitMqSendClient,dataChangeMessageDao));
+        executorService.execute(new DataChangeMessageWorker(null, dataChangeMessageEntity, rabbitMqSendClient, dataChangeMessageDao));
     }
 
 }

@@ -8,7 +8,6 @@ import com.ziroom.ferrari.domain.DataChangeMessageDao;
 import com.ziroom.ferrari.domain.DataChangeMessageEntity;
 import com.ziroom.ferrari.enums.MsgStatusEnum;
 import com.ziroom.ferrari.task.DataChangeMessageSendExecutor;
-import com.ziroom.gaea.mq.rabbitmq.client.RabbitMqSendClient;
 import com.ziroom.rent.common.constant.SymbolConstant;
 import com.ziroom.rent.common.orm.query.Criteria;
 import lombok.extern.slf4j.Slf4j;
@@ -35,8 +34,6 @@ public class MsgSendRecoupJob extends AbstractSimpleElasticJob {
     private DataChangeMessageSendExecutor dataChangeMessageSendExecutor;
     @Autowired
     private DataChangeMessageDao dataChangeMessageDao;
-    @Autowired
-    private RabbitMqSendClient rabbitMqSendClient;
 
     @Override
     public void handleJobExecutionException(final JobException jobException) {
@@ -67,7 +64,7 @@ public class MsgSendRecoupJob extends AbstractSimpleElasticJob {
                 log.warn(logSB.toString());
                 return;
             }
-        }catch (RuntimeException e){
+        } catch (RuntimeException e) {
             logSB.append("|getAllShardDatas Exception:" + e.getMessage());
             log.error(logSB.toString());
             return;
@@ -117,6 +114,6 @@ public class MsgSendRecoupJob extends AbstractSimpleElasticJob {
      * 分片后本节点处理单个待发送消息
      */
     private void processMyShardData(DataChangeMessageEntity myShardData) {
-        dataChangeMessageSendExecutor.execute(myShardData,rabbitMqSendClient,dataChangeMessageDao);
+        dataChangeMessageSendExecutor.execute(myShardData);
     }
 }
