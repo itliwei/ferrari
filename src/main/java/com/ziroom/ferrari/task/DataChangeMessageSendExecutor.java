@@ -36,7 +36,7 @@ public class DataChangeMessageSendExecutor {
                         RabbitMqSendClient rabbitMqSendClient, DataChangeMessageDao dataChangeMessageDao) {
         //保证同一房间的消息放到同一队列由同一个线程处理
         int shardingItem = dataChangeMessageEntity.getChangeKey().hashCode() % threadPoolCount;
-        ThreadPoolExecutor executorService = executorMap.get(shardingItem);
+        ThreadPoolExecutor executorService = executorMap.get(Math.abs(shardingItem));
 
         executorService.execute(new DataChangeMessageWorker(null, dataChangeMessageEntity,rabbitMqSendClient,dataChangeMessageDao));
     }
