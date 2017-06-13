@@ -1,12 +1,15 @@
 package com.ziroom.ferrari.config;
 
+import com.ziroom.ferrari.factory.RabbitFactory;
 import com.ziroom.ferrari.producer.DataChangeMessageProducer;
 import com.ziroom.ferrari.task.DataChangeMessageSendExecutor;
 import com.ziroom.gaea.mq.rabbitmq.client.RabbitMqSendClient;
+import com.ziroom.gaea.mq.rabbitmq.entity.QueueName;
 import com.ziroom.gaea.mq.rabbitmq.factory.RabbitConnectionFactory;
 import com.ziroom.gaea.mq.rabbitmq.receive.queue.ExecutorRabbitMqQueueReceiver;
 import com.ziroom.gaea.mq.rabbitmq.receive.queue.RabbitMqQueueReceiver;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -20,29 +23,42 @@ import org.springframework.context.annotation.Configuration;
 @Slf4j
 @Configuration
 public class ProducerConfig {
+    @Value("${rabbit.server}")
+    private String rabbitServer;
+    @Value("${rabbit.server.port}")
+    private Integer rabbitServerPort;
+    @Value("${rabbit.server.username}")
+    private String rabbitServerUsername;
+    @Value("${rabbit.server.password}")
+    private String rabbitServerPassword;
+    @Value("${rabbit.server.env}")
+    private String rabbitServerEnv;
 
     @Bean
     public RabbitConnectionFactory connectionFactory() {
         return new RabbitConnectionFactory();
     }
 
+    @Bean
+    public RabbitFactory connectionRabbitFactory() {
+        return new RabbitFactory(rabbitServer,rabbitServerPort,rabbitServerUsername,
+                rabbitServerPassword,rabbitServerEnv);
+    }
+
     @Bean(name = "rabbitMqSendClient")
-    public RabbitMqSendClient rabbitMqSendClient(RabbitConnectionFactory rabbitConnectionFactory) {
-        rabbitConnectionFactory.init();
-        RabbitMqSendClient client = new RabbitMqSendClient(rabbitConnectionFactory);
-        return client;
+    public RabbitMqSendClient rabbitMqSendClient(RabbitFactory rabbitFactory) {
+        return new RabbitMqSendClient(rabbitFactory);
     }
 
     @Bean
-    public RabbitMqQueueReceiver rabbitMqQueueReceiver(RabbitConnectionFactory rabbitConnectionFactory) {
-        rabbitConnectionFactory.init();
+    public RabbitMqQueueReceiver rabbitMqQueueReceiver(RabbitFactory rabbitConnectionFactory) {
         RabbitMqQueueReceiver rabbitMqQueueReceiver = new RabbitMqQueueReceiver();
         rabbitMqQueueReceiver.setRabbitConnectionFactory(rabbitConnectionFactory);
         return rabbitMqQueueReceiver;
     }
 
     @Bean
-    public ExecutorRabbitMqQueueReceiver excutorRabbitMqQueueReceiver(RabbitConnectionFactory rabbitConnectionFactory) {
+    public ExecutorRabbitMqQueueReceiver excutorRabbitMqQueueReceiver(RabbitFactory rabbitConnectionFactory) {
         ExecutorRabbitMqQueueReceiver excutorRabbitMqQueueReceiver = new ExecutorRabbitMqQueueReceiver();
         excutorRabbitMqQueueReceiver.setRabbitConnectionFactory(rabbitConnectionFactory);
         excutorRabbitMqQueueReceiver.setPoolSize(5);
@@ -58,6 +74,5 @@ public class ProducerConfig {
     public DataChangeMessageSendExecutor dataChangeMessageSendExecutor() {
         return new DataChangeMessageSendExecutor();
     }
-
 
 }
