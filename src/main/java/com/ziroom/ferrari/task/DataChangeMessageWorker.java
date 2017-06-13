@@ -81,7 +81,7 @@ public class DataChangeMessageWorker implements Runnable, Comparable<DataChangeM
         return myTime > ortherTime ? 1 : (myTime == ortherTime ? 0 : -1);
     }
 
-    private DataChangeMessageEntity getDataChangeMessageEntity() {
+    public DataChangeMessageEntity getDataChangeMessageEntity() {
         return dataChangeMessageEntity;
     }
 }
