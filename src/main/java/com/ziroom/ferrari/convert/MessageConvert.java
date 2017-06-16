@@ -25,7 +25,7 @@ public class MessageConvert {
         }
 
         DataChangeMessageEntity dataChangeMessageEntity = new DataChangeMessageEntity();
-        dataChangeMessageEntity.setProduceTime(DateUtils.format2Long(new Date()));
+        dataChangeMessageEntity.setProduceTime(DateUtils.format2Long(new Date(),true));
         dataChangeMessageEntity.setChangeTime(dataChangeMessage.getChangeTime());
         dataChangeMessageEntity.setChangeData(dataChangeMessage.getChangeData());
         dataChangeMessageEntity.setChangeEntityName(dataChangeMessage.getChangeEntityName());

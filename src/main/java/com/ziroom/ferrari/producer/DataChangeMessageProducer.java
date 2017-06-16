@@ -9,6 +9,7 @@ import com.ziroom.ferrari.enums.QueueNameEnum;
 import com.ziroom.ferrari.exception.DataChangeMessageSendException;
 import com.ziroom.ferrari.task.DataChangeMessageSendExecutor;
 import com.ziroom.ferrari.vo.DataChangeMessage;
+import com.ziroom.gaea.mq.rabbitmq.entity.QueueName;
 import com.ziroom.rent.common.idgenerator.ObjectIdGenerator;
 import com.ziroom.rent.common.util.DateUtils;
 import lombok.Getter;
@@ -49,13 +50,50 @@ public class DataChangeMessageProducer {
         StringBuilder sb = new StringBuilder();
         sb.append("DataChangeMessageProducer.sendMsg");
         sb.append("|").append(queueNameEnum).append(",").append(dataChangeMessage);
+        sendMessageEntity(queueNameEnum.getSystem(),queueNameEnum.getModule(),queueNameEnum.getFunction(),
+                dataChangeMessage, start, sb);
+    }
+
+    /**
+     * 不真正发送消息到MQ
+     * 先持久化到消息DB，再异步发送消息到MQ
+     *
+     * @param queueName QueueName
+     * @param dataChangeMessage
+     * @throws DataChangeMessageSendException
+     * @author liwei
+     */
+    public void sendMsg(QueueName queueName, DataChangeMessage dataChangeMessage) {
+        Preconditions.checkNotNull(queueName, "queueNameEnum 不能为空");
+        Preconditions.checkNotNull(dataChangeMessage, "dataChangeMessage 不能为空");
+        long start = System.currentTimeMillis();
+        StringBuilder sb = new StringBuilder();
+        sb.append("DataChangeMessageProducer.sendMsg");
+        sb.append("|").append(queueName.toString()).append(",").append(dataChangeMessage);
+        sendMessageEntity(queueName.getSystem(),queueName.getModule(),queueName.getFunction(),
+                dataChangeMessage, start, sb);
+    }
+
+    /**
+     * 1、封装DataChangeMessageEntity
+     * 2、插入数据库
+     * 3、放入线程池
+     * @param system
+     * @param module
+     * @param function
+     * @param dataChangeMessage
+     * @param start
+     * @param sb
+     */
+    private void sendMessageEntity(String system,String module,String function,
+                                   DataChangeMessage dataChangeMessage, long start, StringBuilder sb) {
         try {
             DataChangeMessageEntity dataChangeMessageEntity = MessageConvert.convertDataChangeMessage(dataChangeMessage);
             //生产msgId
             dataChangeMessageEntity.setMsgId(ObjectIdGenerator.nextValue());
-            dataChangeMessageEntity.setMsgSystem(queueNameEnum.getSystem());
-            dataChangeMessageEntity.setMsgModule(queueNameEnum.getModule());
-            dataChangeMessageEntity.setMsgFunction(queueNameEnum.getFunction());
+            dataChangeMessageEntity.setMsgSystem(system);
+            dataChangeMessageEntity.setMsgModule(module);
+            dataChangeMessageEntity.setMsgFunction(function);
             dataChangeMessageDao.insert(dataChangeMessageEntity);
             sb.append("|插入数据库:success");
             //发送任务
@@ -70,15 +108,4 @@ public class DataChangeMessageProducer {
         }
     }
 
-    public static void main(String[] args) {
-        DataChangeMessageProducer producer = new DataChangeMessageProducer();
-        for (int i = 0; i < 100; i++) {
-            DataChangeMessage dataChangeMessage = new DataChangeMessage();
-            dataChangeMessage.setChangeKey(i + "");
-            dataChangeMessage.setChangeTime(DateUtils.format2Long(new Date()));
-            dataChangeMessage.setChangeEntityName("room");
-            dataChangeMessage.setChangeType(ChangeTypeEnum.DELETE);
-            producer.sendMsg(QueueNameEnum.AMS, dataChangeMessage);
-        }
-    }
 }
