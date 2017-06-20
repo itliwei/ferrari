@@ -6,8 +6,11 @@ import com.ziroom.ferrari.domain.DataChangeMessageEntity;
 import com.ziroom.ferrari.enums.MsgStatusEnum;
 import com.ziroom.ferrari.exception.DataChangeMessageSendException;
 import com.ziroom.ferrari.vo.DataChangeMessage;
+import com.ziroom.gaea.mq.rabbitmq.PublishSubscribeType;
 import com.ziroom.gaea.mq.rabbitmq.client.RabbitMqSendClient;
+import com.ziroom.gaea.mq.rabbitmq.entity.ExchangeName;
 import com.ziroom.gaea.mq.rabbitmq.entity.QueueName;
+import com.ziroom.gaea.mq.rabbitmq.entity.RoutingKey;
 import com.ziroom.rent.common.orm.query.Update;
 import lombok.extern.slf4j.Slf4j;
 
@@ -42,10 +45,7 @@ public class DataChangeMessageWorker implements Runnable, Comparable<DataChangeM
         sb.append("|发送状态：");
         boolean sendMsgToMqSuccess = true;
         try {
-            QueueName queueName = new QueueName(dataChangeMessageEntity.getMsgSystem(), dataChangeMessageEntity.getMsgModule(),
-                    dataChangeMessageEntity.getMsgFunction());
-            DataChangeMessage dataChangeMessage = MessageConvert.convertDataChangeMessageEntity(dataChangeMessageEntity);
-            rabbitMqSendClient.sendQueue(queueName, dataChangeMessage.toJsonStr());
+            sendTopicMsg(dataChangeMessageEntity);
             sb.append("|success");
         } catch (Exception exp) {
             sendMsgToMqSuccess = false;
@@ -74,6 +74,23 @@ public class DataChangeMessageWorker implements Runnable, Comparable<DataChangeM
         }
     }
 
+    public void sendQueueMsg(DataChangeMessageEntity dataChangeMessageEntity) throws Exception {
+        DataChangeMessage dataChangeMessage = MessageConvert.convertDataChangeMessageEntity(dataChangeMessageEntity);
+        QueueName queueName = new QueueName(dataChangeMessageEntity.getMsgSystem(), dataChangeMessageEntity.getMsgModule(),
+                    dataChangeMessageEntity.getMsgFunction());
+        rabbitMqSendClient.sendQueue(queueName, dataChangeMessage.toJsonStr());
+
+    }
+
+    public void sendTopicMsg(DataChangeMessageEntity dataChangeMessageEntity) throws Exception {
+        DataChangeMessage dataChangeMessage = MessageConvert.convertDataChangeMessageEntity(dataChangeMessageEntity);
+        ExchangeName exchangeName = new ExchangeName(dataChangeMessageEntity.getMsgSystem(), dataChangeMessageEntity.getMsgModule(),
+                dataChangeMessageEntity.getMsgFunction());
+        RoutingKey routingKey = new RoutingKey(dataChangeMessageEntity.getMsgSystem(), dataChangeMessageEntity.getMsgModule(),
+                dataChangeMessageEntity.getMsgFunction());
+        rabbitMqSendClient.sendTopic(exchangeName, routingKey, PublishSubscribeType.TOPIC, dataChangeMessage.toJsonStr());
+    }
+
     @Override
     public int compareTo(DataChangeMessageWorker o) {
         long myTime = this.getDataChangeMessageEntity().getChangeTime();
@@ -84,4 +101,6 @@ public class DataChangeMessageWorker implements Runnable, Comparable<DataChangeM
     public DataChangeMessageEntity getDataChangeMessageEntity() {
         return dataChangeMessageEntity;
     }
+
+
 }
