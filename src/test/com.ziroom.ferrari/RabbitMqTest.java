@@ -2,6 +2,7 @@ package com.ziroom.ferrari;
 
 import com.rabbitmq.client.*;
 import com.ziroom.ferrari.enums.QueueNameEnum;
+import com.ziroom.ferrari.factory.RabbitFactory;
 import com.ziroom.gaea.mq.rabbitmq.PublishSubscribeType;
 import com.ziroom.gaea.mq.rabbitmq.client.RabbitMqSendClient;
 import com.ziroom.gaea.mq.rabbitmq.entity.BindingKey;
@@ -30,10 +31,9 @@ import java.util.concurrent.TimeoutException;
 public class RabbitMqTest {
 
    public static void main(String[] args) {
-//       RabbitFactory rabbitConnectionFactory = new RabbitFactory("10.16.9.34,10.16.9.35,10.16.9.37",
-//               5672,"phoenix_rabbit_write",
-//               "phoenix_rabbit_write","d");
-       RabbitConnectionFactory rabbitConnectionFactory = new RabbitConnectionFactory();
+       RabbitFactory rabbitConnectionFactory = new RabbitFactory("10.16.9.34,10.16.9.35,10.16.9.37",
+               5672,"phoenix_rabbit_write",
+               "phoenix_rabbit_write","d");
 
        rabbitConnectionFactory.getConnectFactory().setVirtualHost("phoenix");
        RabbitMqSendClient rabbitMqSendClient = new RabbitMqSendClient(rabbitConnectionFactory);
@@ -45,7 +45,7 @@ public class RabbitMqTest {
        QueueName queueName = new QueueName(QueueNameEnum.AMS.getSystem(),
                QueueNameEnum.AMS.getModule(),QueueNameEnum.AMS.getFunction());
        BindingKey bindingKey = new BindingKey(QueueNameEnum.AMS.getSystem(),
-               QueueNameEnum.AMS.getModule(),QueueNameEnum.AMS.getFunction());
+               "*",QueueNameEnum.AMS.getFunction());
        List<RabbitMqMessageListener> listeners = new ArrayList<>(1);
        listeners.add(new RabbitMqMessageListener() {
            @Override
@@ -53,13 +53,14 @@ public class RabbitMqTest {
                System.out.println(delivery.getEnvelope().getRoutingKey()+"|||"+new String(delivery.getBody()));
            }
        });
-       RabbitMqTopicReceiver topicReceiver = new RabbitMqTopicReceiver(rabbitConnectionFactory,listeners,bindingKey,exchangeName);
+       RabbitMqTopicReceiver topicReceiver = new RabbitMqTopicReceiver(rabbitConnectionFactory,listeners,
+               bindingKey,exchangeName,PublishSubscribeType.TOPIC);
 
        RabbitMqQueueReceiver queueReceiver = new RabbitMqQueueReceiver(rabbitConnectionFactory, listeners, queueName);
        new Thread(){
            @Override
            public void run() {
-              for (int i=0;i<10;i++){
+              for (int i=0;i<5;i++){
                    try {
                        TimeUnit.MILLISECONDS.sleep(100);
                    } catch (InterruptedException e) {
@@ -68,8 +69,8 @@ public class RabbitMqTest {
                    String msg = DateUtils.currentTimeMillis();
                    System.out.println("send msg:" + msg);
                    try {
-                       rabbitMqSendClient.sendQueue(queueName,msg);
-//                       rabbitMqSendClient.sendTopic(exchangeName, routingKey, PublishSubscribeType.TOPIC,  msg);
+//                       rabbitMqSendClient.sendQueue(queueName,msg);
+                       rabbitMqSendClient.sendTopic(exchangeName, routingKey, PublishSubscribeType.TOPIC,  msg);
                    } catch (Exception e) {
                        e.printStackTrace();
                    }
@@ -81,10 +82,16 @@ public class RabbitMqTest {
        new Thread(){
            @Override
            public void run() {
-               while (true) {
+               for (int i = 0; i < 10; i++) {
                    try {
-                       queueReceiver.receiveMessage();
-//                       topicReceiver.receiveMessage();
+                       TimeUnit.MILLISECONDS.sleep(80);
+                   } catch (InterruptedException e) {
+                       e.printStackTrace();
+                   }
+                   System.out.println("consumer msg :");
+                   try {
+//                       queueReceiver.receiveMessage();
+                       topicReceiver.receiveMessage();
                    } catch (Exception e) {
                        e.printStackTrace();
                    }
