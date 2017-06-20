@@ -8,6 +8,7 @@ import com.ziroom.gaea.mq.rabbitmq.entity.QueueName;
 import com.ziroom.gaea.mq.rabbitmq.factory.RabbitConnectionFactory;
 import com.ziroom.gaea.mq.rabbitmq.receive.queue.ExecutorRabbitMqQueueReceiver;
 import com.ziroom.gaea.mq.rabbitmq.receive.queue.RabbitMqQueueReceiver;
+import com.ziroom.gaea.mq.rabbitmq.receive.topic.RabbitMqTopicReceiver;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -36,13 +37,17 @@ public class ProducerConfig {
 
     @Bean
     public RabbitConnectionFactory connectionFactory() {
-        return new RabbitConnectionFactory();
+        RabbitConnectionFactory rabbitConnectionFactory = new RabbitConnectionFactory();
+        rabbitConnectionFactory.getConnectFactory().setVirtualHost("phoenix");
+        return rabbitConnectionFactory;
     }
 
     @Bean
     public RabbitFactory connectionRabbitFactory() {
-        return new RabbitFactory(rabbitServer,rabbitServerPort,rabbitServerUsername,
-                rabbitServerPassword,rabbitServerEnv);
+        RabbitFactory rabbitFactory = new RabbitFactory(rabbitServer, rabbitServerPort, rabbitServerUsername,
+                rabbitServerPassword, rabbitServerEnv);
+        rabbitFactory.getConnectFactory().setVirtualHost("phoenix");
+        return  rabbitFactory;
     }
 
     @Bean(name = "rabbitMqSendClient")
@@ -56,6 +61,14 @@ public class ProducerConfig {
         rabbitMqQueueReceiver.setRabbitConnectionFactory(rabbitConnectionFactory);
         return rabbitMqQueueReceiver;
     }
+
+    @Bean
+    public RabbitMqTopicReceiver rabbitMqTopicReceiver(RabbitFactory rabbitConnectionFactory) {
+        RabbitMqTopicReceiver topicReceiver = new RabbitMqTopicReceiver();
+        topicReceiver.setRabbitConnectionFactory(rabbitConnectionFactory);
+        return topicReceiver;
+    }
+
 
     @Bean
     public ExecutorRabbitMqQueueReceiver excutorRabbitMqQueueReceiver(RabbitFactory rabbitConnectionFactory) {
