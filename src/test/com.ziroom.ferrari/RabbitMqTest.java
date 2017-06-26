@@ -38,31 +38,47 @@ public class RabbitMqTest {
        rabbitConnectionFactory.getConnectFactory().setVirtualHost("phoenix");
        RabbitMqSendClient rabbitMqSendClient = new RabbitMqSendClient(rabbitConnectionFactory);
        RabbitMqQueueReceiver rabbitMqQueueReceiver = new RabbitMqQueueReceiver(rabbitConnectionFactory);
-       ExchangeName exchangeName = new ExchangeName(QueueNameEnum.AMS.getSystem(),
-               QueueNameEnum.AMS.getModule(),QueueNameEnum.AMS.getFunction());
-       RoutingKey routingKey = new RoutingKey(QueueNameEnum.AMS.getSystem(),
-               QueueNameEnum.AMS.getModule(),QueueNameEnum.AMS.getFunction());
-       QueueName queueName = new QueueName(QueueNameEnum.AMS.getSystem(),
-               QueueNameEnum.AMS.getModule(),QueueNameEnum.AMS.getFunction());
-       BindingKey bindingKey = new BindingKey(QueueNameEnum.AMS.getSystem(),
-               "*",QueueNameEnum.AMS.getFunction());
+       ExchangeName exchangeName = new ExchangeName(QueueNameEnum.INVENTORY.getSystem(),
+               QueueNameEnum.INVENTORY.getModule(),QueueNameEnum.INVENTORY.getFunction());
+       RoutingKey routingKey = new RoutingKey(QueueNameEnum.INVENTORY.getSystem(),
+               QueueNameEnum.INVENTORY.getModule(),QueueNameEnum.INVENTORY.getFunction());
+       QueueName queueName = new QueueName(QueueNameEnum.INVENTORY.getSystem(),
+               QueueNameEnum.INVENTORY.getModule(),QueueNameEnum.INVENTORY.getFunction());
+       BindingKey bindingKey = new BindingKey(QueueNameEnum.INVENTORY.getSystem(),
+               "*",QueueNameEnum.INVENTORY.getFunction());
+
+       BindingKey bindingKey2 = new BindingKey(QueueNameEnum.INVENTORY.getSystem(),
+               "*",QueueNameEnum.INVENTORY.getFunction());
+
        List<RabbitMqMessageListener> listeners = new ArrayList<>(1);
        listeners.add(new RabbitMqMessageListener() {
            @Override
            public void processMessage(QueueingConsumer.Delivery delivery) throws Exception {
-               System.out.println(delivery.getEnvelope().getRoutingKey()+"|||"+new String(delivery.getBody()));
+               System.out.println("consumer msg :"+delivery.getEnvelope().getRoutingKey()+"|||"+new String(delivery.getBody()));
            }
        });
+
+       List<RabbitMqMessageListener> listeners2 = new ArrayList<>(1);
+       listeners.add(new RabbitMqMessageListener() {
+           @Override
+           public void processMessage(QueueingConsumer.Delivery delivery) throws Exception {
+               System.out.println("listeners2 consumer msg :"+delivery.getEnvelope().getRoutingKey()+"|||"+new String(delivery.getBody()));
+           }
+       });
+
        RabbitMqTopicReceiver topicReceiver = new RabbitMqTopicReceiver(rabbitConnectionFactory,listeners,
-               bindingKey,exchangeName,PublishSubscribeType.TOPIC);
+               queueName,bindingKey,exchangeName,PublishSubscribeType.TOPIC);
+
+       RabbitMqTopicReceiver topicReceiver2 = new RabbitMqTopicReceiver(rabbitConnectionFactory,listeners,
+               queueName,bindingKey,exchangeName,PublishSubscribeType.TOPIC);
 
        RabbitMqQueueReceiver queueReceiver = new RabbitMqQueueReceiver(rabbitConnectionFactory, listeners, queueName);
        new Thread(){
            @Override
            public void run() {
-              for (int i=0;i<5;i++){
+              for (int i=0;i<1000;i++){
                    try {
-                       TimeUnit.MILLISECONDS.sleep(100);
+                       TimeUnit.MILLISECONDS.sleep(500);
                    } catch (InterruptedException e) {
                        e.printStackTrace();
                    }
@@ -79,25 +95,24 @@ public class RabbitMqTest {
            }
        }.start();
 
-       new Thread(){
+       /*new Thread(){
            @Override
            public void run() {
-               for (int i = 0; i < 10; i++) {
-                   try {
-                       TimeUnit.MILLISECONDS.sleep(80);
-                   } catch (InterruptedException e) {
-                       e.printStackTrace();
-                   }
-                   System.out.println("consumer msg :");
-                   try {
+               try {
+                   TimeUnit.MILLISECONDS.sleep(80);
+               } catch (InterruptedException e) {
+                   e.printStackTrace();
+               }
+
+               try {
 //                       queueReceiver.receiveMessage();
-                       topicReceiver.receiveMessage();
-                   } catch (Exception e) {
-                       e.printStackTrace();
-                   }
+                   topicReceiver.receiveMessage();
+                   topicReceiver2.receiveMessage();
+               } catch (Exception e) {
+                   e.printStackTrace();
                }
            }
-       }.start();
+       }.start();*/
 
    }
 }

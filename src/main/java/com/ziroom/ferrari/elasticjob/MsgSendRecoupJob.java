@@ -7,6 +7,7 @@ import com.google.common.collect.Lists;
 import com.ziroom.ferrari.domain.DataChangeMessageDao;
 import com.ziroom.ferrari.domain.DataChangeMessageEntity;
 import com.ziroom.ferrari.enums.MsgStatusEnum;
+import com.ziroom.ferrari.factory.SpringFactory;
 import com.ziroom.ferrari.task.DataChangeMessageSendExecutor;
 import com.ziroom.rent.common.constant.SymbolConstant;
 import com.ziroom.rent.common.orm.query.Criteria;

@@ -21,7 +21,7 @@ import org.springframework.context.annotation.Configuration;
  * @date 2017/6/9
  */
 @Slf4j
-@Configuration
+//@Configuration
 public class MsgSendRecoupJobConfig {
     @Value("${job.regCenter.serverLists}")
     private String zkServerList;
