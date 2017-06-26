@@ -45,7 +45,7 @@ public class MsgSendRecoupJob extends AbstractSimpleElasticJob {
     public void process(final JobExecutionMultipleShardingContext context) {
         StringBuilder logSB = new StringBuilder();
         long start = System.currentTimeMillis();
-        logSB.append("DataChangeMessageJob 消息发送补偿作业开始");
+        logSB.append(JOB_DESC + " 开始");
 
         //得到分片项
         List<Integer> shardingItems = context.getShardingItems();
