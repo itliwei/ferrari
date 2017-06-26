@@ -38,13 +38,13 @@ public class RabbitMqTest {
        rabbitConnectionFactory.getConnectFactory().setVirtualHost("phoenix");
        RabbitMqSendClient rabbitMqSendClient = new RabbitMqSendClient(rabbitConnectionFactory);
        RabbitMqQueueReceiver rabbitMqQueueReceiver = new RabbitMqQueueReceiver(rabbitConnectionFactory);
-       ExchangeName exchangeName = new ExchangeName(QueueNameEnum.INVENTORY.getSystem(),
-               QueueNameEnum.INVENTORY.getModule(),QueueNameEnum.INVENTORY.getFunction());
-       RoutingKey routingKey = new RoutingKey(QueueNameEnum.INVENTORY.getSystem(),
-               QueueNameEnum.INVENTORY.getModule(),QueueNameEnum.INVENTORY.getFunction());
-       QueueName queueName = new QueueName(QueueNameEnum.INVENTORY.getSystem(),
-               QueueNameEnum.INVENTORY.getModule(),QueueNameEnum.INVENTORY.getFunction());
-       BindingKey bindingKey = new BindingKey(QueueNameEnum.INVENTORY.getSystem(),
+       ExchangeName exchangeName = new ExchangeName("test",
+               "liwei",QueueNameEnum.INVENTORY.getFunction());
+       RoutingKey routingKey = new RoutingKey("test",
+               "liwei",QueueNameEnum.INVENTORY.getFunction());
+       QueueName queueName = new QueueName("test",
+               "liwei",QueueNameEnum.INVENTORY.getFunction());
+       BindingKey bindingKey = new BindingKey("test",
                "*",QueueNameEnum.INVENTORY.getFunction());
 
        BindingKey bindingKey2 = new BindingKey(QueueNameEnum.INVENTORY.getSystem(),
@@ -76,7 +76,7 @@ public class RabbitMqTest {
        new Thread(){
            @Override
            public void run() {
-              for (int i=0;i<1000;i++){
+              for (int i=0;i<10;i++){
                    try {
                        TimeUnit.MILLISECONDS.sleep(500);
                    } catch (InterruptedException e) {
@@ -86,7 +86,7 @@ public class RabbitMqTest {
                    System.out.println("send msg:" + msg);
                    try {
 //                       rabbitMqSendClient.sendQueue(queueName,msg);
-                       rabbitMqSendClient.sendTopic(exchangeName, routingKey, PublishSubscribeType.TOPIC,  msg);
+//                       rabbitMqSendClient.sendTopic(exchangeName, routingKey, PublishSubscribeType.TOPIC,  msg);
                    } catch (Exception e) {
                        e.printStackTrace();
                    }
