@@ -35,7 +35,7 @@ public class ProducerConfig {
     @Value("${rabbit.server.env}")
     private String rabbitServerEnv;
 
-    @Bean
+//    @Bean
     public RabbitConnectionFactory connectionFactory() {
         RabbitConnectionFactory rabbitConnectionFactory = new RabbitConnectionFactory();
         rabbitConnectionFactory.getConnectFactory().setVirtualHost("phoenix");
