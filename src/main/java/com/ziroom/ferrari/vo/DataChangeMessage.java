@@ -1,10 +1,12 @@
 package com.ziroom.ferrari.vo;
 
-import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.ziroom.ferrari.enums.ChangeTypeEnum;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.apache.commons.lang3.StringUtils;
+
 
 /**
  * 数据变更消息
@@ -26,11 +28,16 @@ public class DataChangeMessage {
     private ChangeTypeEnum changeType;
     //数据变更时间 yyyyMMddHHmmssSSS
     private long changeTime;
-    //变更内容 TODO:补充详细说明
+    //变更内容
     private String changeData;
 
     public String toJsonStr() {
-        return JSON.toJSONString(this);
+        JSONObject jsonObject = (JSONObject) JSONObject.toJSON(this);
+        String changeType = jsonObject.getString("changeType");
+        if (StringUtils.isNotBlank(changeType)) {
+            ChangeTypeEnum typeEnum = ChangeTypeEnum.valueOf(changeType);
+            jsonObject.put("changeType", typeEnum.getCode());
+        }
+        return  jsonObject.toJSONString();
     }
-
 }

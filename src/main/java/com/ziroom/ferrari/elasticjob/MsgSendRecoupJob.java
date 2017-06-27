@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.ContextLoaderListener;
 
 import java.util.List;
 
@@ -34,6 +35,9 @@ public class MsgSendRecoupJob extends AbstractSimpleElasticJob {
     private DataChangeMessageSendExecutor dataChangeMessageSendExecutor;
     @Autowired
     private DataChangeMessageDao dataChangeMessageDao;
+
+    public MsgSendRecoupJob() {
+    }
 
     @Override
     public void handleJobExecutionException(final JobException jobException) {
@@ -105,6 +109,9 @@ public class MsgSendRecoupJob extends AbstractSimpleElasticJob {
      * 从数据库中得到所有分片的待发送消息
      */
     private List<DataChangeMessageEntity> getAllShardDatas() {
+        if (dataChangeMessageDao == null){
+            dataChangeMessageDao = (DataChangeMessageDao)ContextLoaderListener.getCurrentWebApplicationContext().getBean("dataChangeMessageDao");
+        }
         List<DataChangeMessageEntity> dataChangeMessageEntities = dataChangeMessageDao.findList(
                 Criteria.where("msgStatus", MsgStatusEnum.MSG_UN_SEND.getCode()));
         return dataChangeMessageEntities;
@@ -114,6 +121,10 @@ public class MsgSendRecoupJob extends AbstractSimpleElasticJob {
      * 分片后本节点处理单个待发送消息
      */
     private void processMyShardData(DataChangeMessageEntity myShardData) {
+        if (dataChangeMessageSendExecutor == null){
+            this.dataChangeMessageSendExecutor = (DataChangeMessageSendExecutor)ContextLoaderListener.getCurrentWebApplicationContext().getBean("dataChangeMessageSendExecutor");
+        }
         dataChangeMessageSendExecutor.execute(myShardData);
+
     }
 }

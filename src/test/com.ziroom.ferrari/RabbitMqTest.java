@@ -1,8 +1,12 @@
 package com.ziroom.ferrari;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.rabbitmq.client.*;
+import com.ziroom.ferrari.enums.ChangeTypeEnum;
 import com.ziroom.ferrari.enums.QueueNameEnum;
 import com.ziroom.ferrari.factory.RabbitFactory;
+import com.ziroom.ferrari.vo.DataChangeMessage;
 import com.ziroom.gaea.mq.rabbitmq.PublishSubscribeType;
 import com.ziroom.gaea.mq.rabbitmq.client.RabbitMqSendClient;
 import com.ziroom.gaea.mq.rabbitmq.entity.BindingKey;
@@ -47,30 +51,21 @@ public class RabbitMqTest {
        BindingKey bindingKey = new BindingKey("test",
                "*",QueueNameEnum.INVENTORY.getFunction());
 
-       BindingKey bindingKey2 = new BindingKey(QueueNameEnum.INVENTORY.getSystem(),
-               "*",QueueNameEnum.INVENTORY.getFunction());
 
        List<RabbitMqMessageListener> listeners = new ArrayList<>(1);
        listeners.add(new RabbitMqMessageListener() {
            @Override
            public void processMessage(QueueingConsumer.Delivery delivery) throws Exception {
-               System.out.println("consumer msg :"+delivery.getEnvelope().getRoutingKey()+"|||"+new String(delivery.getBody()));
-           }
-       });
+               byte[] body = delivery.getBody();
+               JSONObject  jsonObject = (JSONObject) JSONObject.parse(body);
 
-       List<RabbitMqMessageListener> listeners2 = new ArrayList<>(1);
-       listeners.add(new RabbitMqMessageListener() {
-           @Override
-           public void processMessage(QueueingConsumer.Delivery delivery) throws Exception {
-               System.out.println("listeners2 consumer msg :"+delivery.getEnvelope().getRoutingKey()+"|||"+new String(delivery.getBody()));
+               System.out.println("consumer msg :"+delivery.getEnvelope().getRoutingKey()+"|||"+jsonObject.toJSONString());
            }
        });
 
        RabbitMqTopicReceiver topicReceiver = new RabbitMqTopicReceiver(rabbitConnectionFactory,listeners,
-               queueName,bindingKey,exchangeName,PublishSubscribeType.TOPIC);
+               bindingKey,exchangeName,PublishSubscribeType.TOPIC);
 
-       RabbitMqTopicReceiver topicReceiver2 = new RabbitMqTopicReceiver(rabbitConnectionFactory,listeners,
-               queueName,bindingKey,exchangeName,PublishSubscribeType.TOPIC);
 
        RabbitMqQueueReceiver queueReceiver = new RabbitMqQueueReceiver(rabbitConnectionFactory, listeners, queueName);
        new Thread(){
@@ -86,7 +81,9 @@ public class RabbitMqTest {
                    System.out.println("send msg:" + msg);
                    try {
 //                       rabbitMqSendClient.sendQueue(queueName,msg);
-//                       rabbitMqSendClient.sendTopic(exchangeName, routingKey, PublishSubscribeType.TOPIC,  msg);
+                       DataChangeMessage dataChangeMessage = new DataChangeMessage();
+                       dataChangeMessage.setChangeType(ChangeTypeEnum.ADD);
+                       rabbitMqSendClient.sendTopic(exchangeName, routingKey, PublishSubscribeType.TOPIC,  dataChangeMessage.toJsonStr());
                    } catch (Exception e) {
                        e.printStackTrace();
                    }
@@ -95,7 +92,7 @@ public class RabbitMqTest {
            }
        }.start();
 
-       /*new Thread(){
+       new Thread(){
            @Override
            public void run() {
                try {
@@ -107,12 +104,11 @@ public class RabbitMqTest {
                try {
 //                       queueReceiver.receiveMessage();
                    topicReceiver.receiveMessage();
-                   topicReceiver2.receiveMessage();
                } catch (Exception e) {
                    e.printStackTrace();
                }
            }
-       }.start();*/
+       }.start();
 
    }
 }
