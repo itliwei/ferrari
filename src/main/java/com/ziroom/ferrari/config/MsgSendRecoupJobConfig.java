@@ -21,7 +21,7 @@ import org.springframework.context.annotation.Configuration;
  * @date 2017/6/9
  */
 @Slf4j
-//@Configuration
+@Configuration
 public class MsgSendRecoupJobConfig {
     @Value("${job.regCenter.serverLists}")
     private String zkServerList;
@@ -42,11 +42,10 @@ public class MsgSendRecoupJobConfig {
      */
     @Bean(name = "dataChangeMessageJobScheduler")
     public JobScheduler dataChangeMessageJobScheduler() {
-        CoordinatorRegistryCenter regCenter = this.registryCenter;
         if (registryCenter == null) {
             ZookeeperConfiguration ferrariZkConfig = new ZookeeperConfiguration(zkServerList, "ferrari-job", 1000, 3000, 3);
-            regCenter = new ZookeeperRegistryCenter(ferrariZkConfig);
-            regCenter.init();
+            registryCenter = new ZookeeperRegistryCenter(ferrariZkConfig);
+            registryCenter.init();
         }
 
         SimpleJobConfiguration simpleJobConfig = JobConfigurationFactory
@@ -56,7 +55,7 @@ public class MsgSendRecoupJobConfig {
                 .overwrite(true)
                 .build();
 
-        JobScheduler jobScheduler = new JobScheduler(regCenter, simpleJobConfig);
+        JobScheduler jobScheduler = new JobScheduler(registryCenter, simpleJobConfig);
         jobScheduler.init();
 
         log.info(MsgSendRecoupJob.JOB_DESC + "*************启动*********************");
