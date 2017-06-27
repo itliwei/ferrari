@@ -36,9 +36,6 @@ public class MsgSendRecoupJob extends AbstractSimpleElasticJob {
     @Autowired
     private DataChangeMessageDao dataChangeMessageDao;
 
-    public MsgSendRecoupJob() {
-    }
-
     @Override
     public void handleJobExecutionException(final JobException jobException) {
         log.error("DataChangeMessageJob.process error", jobException);
