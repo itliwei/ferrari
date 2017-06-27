@@ -34,6 +34,7 @@ public class DataChangeMessage {
     public String toJsonStr() {
         JSONObject jsonObject = (JSONObject) JSONObject.toJSON(this);
         String changeType = jsonObject.getString("changeType");
+        //修改类型转换为int
         if (StringUtils.isNotBlank(changeType)) {
             ChangeTypeEnum typeEnum = ChangeTypeEnum.valueOf(changeType);
             jsonObject.put("changeType", typeEnum.getCode());
