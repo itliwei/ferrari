@@ -4,7 +4,6 @@ import com.ziroom.ferrari.factory.RabbitFactory;
 import com.ziroom.ferrari.producer.DataChangeMessageProducer;
 import com.ziroom.ferrari.task.DataChangeMessageSendExecutor;
 import com.ziroom.gaea.mq.rabbitmq.client.RabbitMqSendClient;
-import com.ziroom.gaea.mq.rabbitmq.entity.QueueName;
 import com.ziroom.gaea.mq.rabbitmq.factory.RabbitConnectionFactory;
 import com.ziroom.gaea.mq.rabbitmq.receive.queue.ExecutorRabbitMqQueueReceiver;
 import com.ziroom.gaea.mq.rabbitmq.receive.queue.RabbitMqQueueReceiver;
@@ -35,7 +34,7 @@ public class ProducerConfig {
     @Value("${rabbit.server.env}")
     private String rabbitServerEnv;
 
-//    @Bean
+    //@Bean
     public RabbitConnectionFactory connectionFactory() {
         RabbitConnectionFactory rabbitConnectionFactory = new RabbitConnectionFactory();
         rabbitConnectionFactory.getConnectFactory().setVirtualHost("phoenix");
@@ -44,10 +43,13 @@ public class ProducerConfig {
 
     @Bean
     public RabbitFactory connectionRabbitFactory() {
+        if (rabbitServerEnv.equals("p")) {
+            rabbitServerEnv = null;
+        }
         RabbitFactory rabbitFactory = new RabbitFactory(rabbitServer, rabbitServerPort, rabbitServerUsername,
                 rabbitServerPassword, rabbitServerEnv);
         rabbitFactory.getConnectFactory().setVirtualHost("phoenix");
-        return  rabbitFactory;
+        return rabbitFactory;
     }
 
     @Bean(name = "rabbitMqSendClient")

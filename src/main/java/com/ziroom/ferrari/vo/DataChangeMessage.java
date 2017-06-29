@@ -28,6 +28,8 @@ public class DataChangeMessage {
     private ChangeTypeEnum changeType;
     //数据变更时间 yyyyMMddHHmmssSSS
     private long changeTime;
+    //消息生产时间 yyyyMMddHHmmssSSS
+    private long produceTime;
     //变更内容
     private String changeData;
 
@@ -39,6 +41,6 @@ public class DataChangeMessage {
             ChangeTypeEnum typeEnum = ChangeTypeEnum.valueOf(changeType);
             jsonObject.put("changeType", typeEnum.getCode());
         }
-        return  jsonObject.toJSONString();
+        return  jsonObject.toString();
     }
 }
