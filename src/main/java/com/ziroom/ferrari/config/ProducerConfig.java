@@ -81,14 +81,14 @@ public class ProducerConfig {
         return excutorRabbitMqQueueReceiver;
     }
 
-    @Bean(name = "dataChangeMessageProducer")
+    /*@Bean(name = "dataChangeMessageProducer")
     public DataChangeMessageProducer mqProduceClient() {
         return new DataChangeMessageProducer();
     }
-
-    @Bean(name = "dataChangeMessageSendExecutor")
+*/
+   /* @Bean(name = "dataChangeMessageSendExecutor")
     public DataChangeMessageSendExecutor dataChangeMessageSendExecutor() {
         return new DataChangeMessageSendExecutor();
-    }
+    }*/
 
 }
