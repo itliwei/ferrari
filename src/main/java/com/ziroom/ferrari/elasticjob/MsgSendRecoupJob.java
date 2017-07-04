@@ -80,7 +80,7 @@ public class MsgSendRecoupJob extends AbstractSimpleElasticJob {
 
             //保证同一个房间的消息由同一个分片处理
             int shardingItem = dataChangeMessageEntity.getChangeKey().hashCode() % context.getShardingTotalCount();
-            if (shardingItems.contains(shardingItem)) {
+            if (shardingItems.contains(Math.abs(shardingItem))) {
                 myShardDatas.add(dataChangeMessageEntity);
             }
 
