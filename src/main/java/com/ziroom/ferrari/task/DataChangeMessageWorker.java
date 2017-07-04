@@ -37,8 +37,8 @@ public class DataChangeMessageWorker implements Runnable, Comparable<DataChangeM
 
     @Override
     public void run() {
-        //FIXME 临时版本 todoNothing
-        /*StringBuilder sb = new StringBuilder();
+
+        StringBuilder sb = new StringBuilder();
         long start = System.currentTimeMillis();
         sb.append("DataChangeMessageWorker.run ：");
         sb.append("|发送数据：");
@@ -72,13 +72,13 @@ public class DataChangeMessageWorker implements Runnable, Comparable<DataChangeM
         } finally {
             sb.append("|Time:" + (System.currentTimeMillis() - start));
             log.info(sb.toString());
-        }*/
+        }
     }
 
     public void sendQueueMsg(DataChangeMessageEntity dataChangeMessageEntity) throws Exception {
         DataChangeMessage dataChangeMessage = MessageConvert.convertDataChangeMessageEntity(dataChangeMessageEntity);
         QueueName queueName = new QueueName(dataChangeMessageEntity.getMsgSystem(), dataChangeMessageEntity.getMsgModule(),
-                    dataChangeMessageEntity.getMsgFunction());
+                dataChangeMessageEntity.getMsgFunction());
         rabbitMqSendClient.sendQueue(queueName, dataChangeMessage.toJsonStr());
 
     }

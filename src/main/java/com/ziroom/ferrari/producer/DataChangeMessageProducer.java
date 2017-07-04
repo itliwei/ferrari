@@ -87,26 +87,25 @@ public class DataChangeMessageProducer {
      */
     private void sendMessageEntity(String system,String module,String function,
                                    DataChangeMessage dataChangeMessage, long start, StringBuilder sb) {
-        //FIXME 1.0.1.1-SNAPSHOT这个版本什么都不做
-//        try {
-//            DataChangeMessageEntity dataChangeMessageEntity = MessageConvert.convertDataChangeMessage(dataChangeMessage);
-//            //生产msgId
-//            dataChangeMessageEntity.setMsgId(ObjectIdGenerator.nextValue());
-//            dataChangeMessageEntity.setMsgSystem(system);
-//            dataChangeMessageEntity.setMsgModule(module);
-//            dataChangeMessageEntity.setMsgFunction(function);
-//            dataChangeMessageDao.insert(dataChangeMessageEntity);
-//            sb.append("|插入数据库:success");
-//            //发送任务
-//            dataChangeMessageSendExecutor.execute(dataChangeMessageEntity);
-//            sb.append("|发送任务:Success");
-//        } catch (RuntimeException e) {
-//            sb.append("|发送任务:Failed:" + e.getMessage());
-//            throw new DataChangeMessageSendException("DataChangeMessageProducer.sendMsg Error", e);
-//        } finally {
-//            sb.append("|Time:" + (System.currentTimeMillis() - start));
-//            log.info(sb.toString());
-//        }
+        try {
+            DataChangeMessageEntity dataChangeMessageEntity = MessageConvert.convertDataChangeMessage(dataChangeMessage);
+            //生产msgId
+            dataChangeMessageEntity.setMsgId(ObjectIdGenerator.nextValue());
+            dataChangeMessageEntity.setMsgSystem(system);
+            dataChangeMessageEntity.setMsgModule(module);
+            dataChangeMessageEntity.setMsgFunction(function);
+            dataChangeMessageDao.insert(dataChangeMessageEntity);
+            sb.append("|插入数据库:success");
+            //发送任务
+            dataChangeMessageSendExecutor.execute(dataChangeMessageEntity);
+            sb.append("|发送任务:Success");
+        } catch (RuntimeException e) {
+            sb.append("|发送任务:Failed:" + e.getMessage());
+            throw new DataChangeMessageSendException("DataChangeMessageProducer.sendMsg Error", e);
+        } finally {
+            sb.append("|Time:" + (System.currentTimeMillis() - start));
+            log.info(sb.toString());
+        }
     }
 
 }
