@@ -43,7 +43,8 @@ public class ProducerConfig {
 
     @Bean
     public RabbitFactory connectionRabbitFactory() {
-        if (rabbitServerEnv.equals("p")) {
+        //生产环境去掉队列前缀
+        if ("p".equals(rabbitServerEnv)) {
             rabbitServerEnv = null;
         }
         RabbitFactory rabbitFactory = new RabbitFactory(rabbitServer, rabbitServerPort, rabbitServerUsername,
