@@ -20,44 +20,44 @@ import org.springframework.context.annotation.Configuration;
  * @author zhoutao
  * @date 2017/6/9
  */
-@Slf4j
-@Configuration
+//@Slf4j
+//@Configuration
 public class MsgSendRecoupJobConfig {
-    @Value("${job.regCenter.serverLists}")
-    private String zkServerList;
-    private String jobCron = "0 * * * * ?";
-    private int shardingCount = 4; //数据分片，通常是各系统的理论机器各数
-
-    @SuppressWarnings("SpringJavaAutowiringInspection")
-    @Autowired(required = false)
-    @Qualifier(value = "regCenter")
-    private CoordinatorRegistryCenter registryCenter;
-
-    /**
-     * 定义dataChangeMessageJobScheduler
-     *
-     * @return
-     */
-    @Bean(name = "dataChangeMessageJobScheduler")
-    public JobScheduler dataChangeMessageJobScheduler() {
-        if (registryCenter == null) {
-            ZookeeperConfiguration ferrariZkConfig = new ZookeeperConfiguration(zkServerList, "ferrari-job", 1000, 3000, 3);
-            registryCenter = new ZookeeperRegistryCenter(ferrariZkConfig);
-            registryCenter.init();
-        }
-
-        SimpleJobConfiguration simpleJobConfig = JobConfigurationFactory
-                .createSimpleJobConfigurationBuilder(MsgSendRecoupJob.JOB_NAME, MsgSendRecoupJob.class, shardingCount, jobCron)
-                .monitorExecution(false)
-                .misfire(false)
-                .overwrite(true)
-                .build();
-
-        JobScheduler jobScheduler = new JobScheduler(registryCenter, simpleJobConfig);
-        jobScheduler.init();
-
-        log.info(MsgSendRecoupJob.JOB_DESC + "*************启动*********************");
-
-        return jobScheduler;
-    }
+//    @Value("${job.regCenter.serverLists}")
+//    private String zkServerList;
+//    private String jobCron = "0 * * * * ?";
+//    private int shardingCount = 4; //数据分片，通常是各系统的理论机器各数
+//
+////    @SuppressWarnings("SpringJavaAutowiringInspection")
+////    @Autowired(required = false)
+////    @Qualifier(value = "regCenter")
+//    private CoordinatorRegistryCenter registryCenter;
+//
+//    /**
+//     * 定义dataChangeMessageJobScheduler
+//     *
+//     * @return
+//     */
+////    @Bean(name = "dataChangeMessageJobScheduler")
+//    public JobScheduler dataChangeMessageJobScheduler() {
+//        if (registryCenter == null) {
+//            ZookeeperConfiguration ferrariZkConfig = new ZookeeperConfiguration(zkServerList, "ferrari-job", 1000, 3000, 3);
+//            registryCenter = new ZookeeperRegistryCenter(ferrariZkConfig);
+//            registryCenter.init();
+//        }
+//
+//        SimpleJobConfiguration simpleJobConfig = JobConfigurationFactory
+//                .createSimpleJobConfigurationBuilder(MsgSendRecoupJob.JOB_NAME, MsgSendRecoupJob.class, shardingCount, jobCron)
+//                .monitorExecution(false)
+//                .misfire(false)
+//                .overwrite(true)
+//                .build();
+//
+//        JobScheduler jobScheduler = new JobScheduler(registryCenter, simpleJobConfig);
+//        jobScheduler.init();
+//
+////        log.info(MsgSendRecoupJob.JOB_DESC + "*************启动*********************");
+//
+//        return jobScheduler;
+//    }
 }
