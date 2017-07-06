@@ -11,6 +11,7 @@ import org.apache.commons.lang3.StringUtils;
 /**
  * 数据变更消息
  * 实际往MQ发送的消息
+ *
  * @Author zhoutao
  * @Date 2017/6/7
  */
@@ -41,6 +42,6 @@ public class DataChangeMessage {
             ChangeTypeEnum typeEnum = ChangeTypeEnum.valueOf(changeType);
             jsonObject.put("changeType", typeEnum.getCode());
         }
-        return  jsonObject.toString();
+        return jsonObject.toString();
     }
 }

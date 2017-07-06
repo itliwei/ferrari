@@ -20,12 +20,12 @@ public class MessageConvert {
      * @return DataChangeMessage
      */
     public static DataChangeMessageEntity convertDataChangeMessage(DataChangeMessage dataChangeMessage) {
-        if (dataChangeMessage == null){
+        if (dataChangeMessage == null) {
             return null;
         }
 
         DataChangeMessageEntity dataChangeMessageEntity = new DataChangeMessageEntity();
-        dataChangeMessageEntity.setProduceTime(DateUtils.format2Long(new Date(),true));
+        dataChangeMessageEntity.setProduceTime(DateUtils.format2Long(new Date(), true));
         dataChangeMessageEntity.setChangeTime(dataChangeMessage.getChangeTime());
         dataChangeMessageEntity.setChangeData(dataChangeMessage.getChangeData());
         dataChangeMessageEntity.setChangeEntityName(dataChangeMessage.getChangeEntityName());
@@ -37,11 +37,12 @@ public class MessageConvert {
 
     /**
      * dataChangeMessageEntity 转为 DataChangeMessage
+     *
      * @param dataChangeMessageEntity
      * @return
      */
     public static DataChangeMessage convertDataChangeMessageEntity(DataChangeMessageEntity dataChangeMessageEntity) {
-        if (dataChangeMessageEntity == null){
+        if (dataChangeMessageEntity == null) {
             return null;
         }
         DataChangeMessage dataChangeMessage = new DataChangeMessage();

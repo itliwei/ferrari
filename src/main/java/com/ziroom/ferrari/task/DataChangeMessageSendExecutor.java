@@ -4,7 +4,7 @@ import com.google.common.collect.Maps;
 import com.ziroom.ferrari.domain.DataChangeMessageDao;
 import com.ziroom.ferrari.domain.DataChangeMessageEntity;
 import com.ziroom.gaea.mq.rabbitmq.client.RabbitMqSendClient;
-import lombok.Getter;
+import com.ziroom.rent.common.application.thread.NamedThreadFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -33,7 +33,7 @@ public class DataChangeMessageSendExecutor {
         for (int i = 0; i < threadPoolCount; i++) {
             ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(1, 1,
                     0L, TimeUnit.MILLISECONDS,
-                    new MessageWorkerQueue());//拒绝策略
+                    new MessageWorkerQueue(), new NamedThreadFactory("Ferrari"));
             executorMap.put(i, threadPoolExecutor);
         }
     }
@@ -43,7 +43,7 @@ public class DataChangeMessageSendExecutor {
         int shardingItem = dataChangeMessageEntity.getChangeKey().hashCode() % threadPoolCount;
         ThreadPoolExecutor executorService = executorMap.get(Math.abs(shardingItem));
 
-        executorService.execute(new DataChangeMessageWorker(null, dataChangeMessageEntity, rabbitMqSendClient, dataChangeMessageDao));
+        executorService.execute(new DataChangeMessageWorker(dataChangeMessageEntity, rabbitMqSendClient, dataChangeMessageDao));
     }
 
 }

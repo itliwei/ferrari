@@ -24,12 +24,10 @@ public class DataChangeMessageWorker implements Runnable, Comparable<DataChangeM
     private DataChangeMessageDao dataChangeMessageDao;
     private RabbitMqSendClient rabbitMqSendClient;
 
-    private String jobName;
     private DataChangeMessageEntity dataChangeMessageEntity;
 
-    public DataChangeMessageWorker(String jobName, DataChangeMessageEntity dataChangeMessageEntity,
+    public DataChangeMessageWorker(DataChangeMessageEntity dataChangeMessageEntity,
                                    RabbitMqSendClient rabbitMqSendClient, DataChangeMessageDao dataChangeMessageDao) {
-        this.jobName = jobName;
         this.dataChangeMessageEntity = dataChangeMessageEntity;
         this.rabbitMqSendClient = rabbitMqSendClient;
         this.dataChangeMessageDao = dataChangeMessageDao;
